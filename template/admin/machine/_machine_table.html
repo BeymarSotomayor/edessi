@@ -1,0 +1,267 @@
+{% load crispy_forms_tags %}
+
+<h2 class="text-success fw-bold fs-2"><i class="bi bi-gear-fill text-secondary"></i> Lista de Equipos</h2>
+<!-- <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createMachineModal">
+        <i class="bi bi-plus-lg"></i><i class="bi bi-pc-display"></i> Nuevo Equipo
+    </button> -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- 🔹 FILTRO -->
+<div class="container mb-3">
+    <form method="post" class="row g-3">
+        {% csrf_token %}
+        <div class="col-auto">
+            {{ form.start_date.label_tag }}
+            {{ form.start_date }}
+        </div>
+        <div class="col-auto">
+            {{ form.end_date.label_tag }}
+            {{ form.end_date }}
+        </div>
+        <div class="col-auto pt-4">
+            <button class="btn btn-primary btn-sm" type="submit">
+                <i class="bi bi-search"></i> Filtrar
+            </button>
+            {% if machines %}
+
+
+            <!-- <a href="{% url 'report_machines_pdf' %}?start_date={{ form.start_date.value }}&end_date={{ form.end_date.value }}"
+                class="btn btn-success btn-sm" id="exportPdfBtn">
+                <i class="bi bi-download"></i> <span class="btn-text">Descargar PDF</span>
+            </a> -->
+
+            <a href="{% url 'report_machines_pdf' %}?start_date={{ form.start_date.value }}&end_date={{ form.end_date.value }}&view=html"
+                class="btn btn-info btn-sm">
+                <i class="bi bi-eye"></i> <span class="btn-text">Ver Reporte</span>
+            </a>
+
+            {% endif %}
+            <a class="btn btn-secondary btn-sm" href="{% url 'machines_report_list' %}">
+                <i class="bi bi-search"></i> todo
+            </a>
+        </div>
+    </form>
+</div>
+
+<div class="table-fluid">
+    <table class="table table-hover display" id="example">
+        <thead>
+            <tr class="table-primary">
+
+                <th>#</th>
+                <th>Ficha</th>
+                <!-- <th>servicio</th> -->
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Detalle</th>
+                <th>Problema</th>
+                <th>Accesorios</th>
+                <th>Estado</th>
+                <th>Precio Aproximado</th>
+                <th>Precio Final</th>
+                <th>Fecha de Recepción</th>
+                <th>Fecha de Entrega</th>
+                <th>Cliente</th>
+                <th>Imagen</th>
+                <th>Posición</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for machine in machines %}
+            <tr id="row-machine-{{ machine.id }}">
+
+                <td class="td-id">{{ machine.id }}</td>
+                <td class="td-ticket">{{ machine.ticket }}</td>
+                <!-- <td class="td-services">{% if machine.services.all %}
+                    {{ machine.services.all|join:", " }}
+                    {% else %}
+                    ----------
+                    {% endif %}</td> -->
+                <td class="td-brand">{{ machine.brand|default:"--------" }}</td>
+                <td class="td-model">{{ machine.model|default:"--------" }}</td>
+                <td class="td-detail">{{ machine.detail|default:"--------" }}</td>
+                <td class="td-problem">{{ machine.problem|default:"--------" }}</td>
+
+                {% if machine.accessories %}
+                <td class="td-accessories">{{ machine.accessories }}</td>
+                {% else %}
+                <td class="td-accessories">Sin accesorios</td>
+                {% endif %}
+
+
+                {% if machine.status == "Recibido" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-secondary bg-secondary rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "En Revisión" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-success bg-primary rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Diagnóstico" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-info bg-info rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Reparación" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-warning bg-warning text-dark rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Pausado" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-dark bg-dark text-white rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Cancelado" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-danger bg-danger text-white rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "En proceso" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-primary bg-primary text-white rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Terminado" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-dark bg-success text-white rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Por Entregar" %}
+                <td class="td-status fw-bold text-center">
+                    <p class="border bg-primary text-white rounded">
+                        {{ machine.status|default:"------" }}
+                    </p>
+                </td>
+                {% elif machine.status == "Entregado" %}
+                <td class="td-status fw-bold">
+                    <p class="border border-success bg-success text-white rounded">
+                        {{ machine.status|default:"----" }}
+                    </p>
+                </td>
+                {% endif %}
+                <td class="td-price-aprox text-end">{{ machine.price_aprox|default:0.00 }} Bs</td>
+                <td class="td-price text-end">{{ machine.price|default:0.00 }} Bs</td>
+                <td class="td-created">{{ machine.created_at|date:"d/m/Y H:i" }}</td>
+                <td class="td-delivery">{{ machine.delivery_in|date:"d/m/Y H:i"|default:"N/fecha"}}</td>
+                <td class="td-client">{{ machine.client }}</td>
+                <td class="td-img">
+                    {% if machine.img_machine %}
+                    <!-- <img src="{{ machine.img_machine.url }}" alt="Imagen" style="max-width: 80px;"> -->
+                    IMAGEN
+                    {% else %}
+                    No hay imagen
+                    {% endif %}
+                </td>
+                <td class="td-position">{{ machine.position|default:"----" }}</td>
+                <td class="d-flex">
+                    <!-- Botón para abrir modal de edición vía AJAX -->
+                    <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                        onclick="verModal('/machines/{{ machine.id }}/edit/')" data-bs-target="#modal_datos">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+
+                    <!-- Botón para eliminar -->
+                    <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                        onclick="verModal('/machines/{{ machine.id }}/delete/')" data-bs-target="#modal_datos">
+                        <i class="bi bi-trash3-fill"></i>
+                    </a>
+                    <a class="btn btn-outline-primary btn-sm me-1"
+                        onclick="verMachine('/machines/{{ machine.id }}/detail/')">
+                        <i class="bi bi-arrow-right-square-fill"></i> Ver
+                    </a>
+
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startInput = document.getElementById("id_start_date");
+        const endInput = document.getElementById("id_end_date");
+
+        startInput.addEventListener("change", function () {
+            endInput.min = startInput.value; // establece la fecha mínima
+            if (endInput.value < startInput.value) {
+                endInput.value = ""; // limpia si es menor
+            }
+        });
+    });
+
+</script>
+
+<script>
+    function verModal(urls) {
+        $.ajax({
+            url: urls,
+            method: 'GET',
+            success: function (respuesta) {
+                $('.datos_modal').html(respuesta);
+            },
+            error: function (xhr, status, error) {
+                console.error("Ocurrió un error:", error);
+            }
+        });
+    }
+    function verMachine(urls) {
+        window.location.href = urls;
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $("#exportPdfBtn").on("click", function () {
+            let $btn = $(this);
+            let $icon = $btn.find("i");
+            let $text = $btn.find(".btn-text");
+
+            // Guardamos el estado original
+            let originalHtml = $btn.html();
+
+            // Cambiamos a "Cargando..." con spinner
+            $btn.html(
+                '<span class="spinner-border spinner-border-sm me-2"></span>' +
+                '<span class="btn-text">Cargando...</span>'
+            );
+
+            // Después de 10 segundos volvemos al estado original
+            setTimeout(function () {
+                $btn.html(originalHtml);
+            }, 30000);
+        });
+    });
+</script>
+
+<!-- <script>
+    document.getElementById("exportPdfBtn").addEventListener("click", function () {
+        // ✅ empieza descarga normal
+        window.location.href = this.href;
+
+        // ✅ muestra el alert de carga mientras descarga
+        Swal.fire({
+            title: 'Descargando PDF...',
+            text: 'Tu archivo se está generando',
+            icon: 'info',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+            timer: 1000, // 5 segundos
+            timerProgressBar: true
+        });
+    });
+</script> -->

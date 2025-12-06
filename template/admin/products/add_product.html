@@ -1,0 +1,102 @@
+<!-- add_machine.html -->
+{% load crispy_forms_tags %}
+{% block title_modal %}
+<div class="modal-header ">
+    <h5 class="modal-title fw-bold text-success"><i class="bi bi-plus-lg text-success"></i><i class="bi bi-boxes text-success"></i> Nuevo Producto</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+{% endblock title_modal %}
+<div class="container py-5">
+
+    <form id="productForm" action="{% url 'add_product' category.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                {{ form.img_background|as_crispy_field }}
+            </div>
+            <div class="col-lg-6 col-md-12">
+                {{ form.img_name|as_crispy_field }}
+            </div>
+        </div>
+
+        <!-- Fila 2: Nombre | Precio -->
+        <div class="row">
+            <div class="col-6 ">
+                {{ form.name|as_crispy_field }}
+            </div>
+            <div class="col-6 ">
+                {{ form.price|as_crispy_field }}
+            </div>
+        </div>
+
+        <!-- Fila 3: Detalle -->
+        <div class="">
+            {{ form.detail|as_crispy_field }}
+        </div>
+        <div class="">
+            
+        </div>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+
+</div>
+
+<div id="msg"></div>
+
+<!-- JQuery (si no lo tienes ya en base_admin.html) -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+<script>
+    $(document).ready(function () {
+        $("#productForm").on("submit", function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,  // necesario para archivos
+                contentType: false,  // necesario para archivos
+                headers: {
+                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $("#msg").html(`<div class="alert alert-success">${response.message}</div>`);
+                        form[0].reset(); // limpiar form
+                        setTimeout(() => {
+                        document.activeElement.blur(); // 🔥 Quita foco antes de cerrar modal    
+                        $("#modal_datos").modal("hide");
+                    }, 500);
+                    //console.log("/categories/{{category.id}}")
+                    window.location.href="/categories/{{category.id}}"; //}
+                    
+                    } else {
+                        let errorHtml = "<ul>";
+                        $.each(response.errors, function (field, msgs) {
+                            errorHtml += `<li><strong>${field}</strong>: ${msgs.join(", ")}</li>`;
+                        });
+                        errorHtml += "</ul>";
+                        $("#msg").html(`<div class="alert alert-danger">${errorHtml}</div>`);
+                    }
+                },
+                error: function (xhr) {
+                    $("#msg").html(`<div class="alert alert-danger">Error en el servidor</div>`);
+                }
+            });
+        });
+
+    // $.datepicker.setDefaults($.datepicker.regional["es"]);
+    // $('#id_delivery_in').datetimepicker({
+        
+    //     dateFormat: 'yy-mm-dd',
+    //     timeFormat: 'HH:mm',
+    //     minDate: 0
+    // });
+    });
+</script>

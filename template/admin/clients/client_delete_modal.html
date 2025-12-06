@@ -1,0 +1,67 @@
+<div class="modal-header">
+    <h5 class="modal-title">⚠️ Eliminar Cliente</h5>
+    <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+</div>
+
+<div class="modal-body">
+    <p>¿Estás seguro de eliminar al cliente <b>{{ client.name }} {{ client.last_name }}</b>?</p>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    <form id="deleteClientForm" method="post" action="{% url 'delete_client' client.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    </form>
+</div>
+
+<!-- Contenedor para mensajes -->
+<div id="delete-client-alert-container" class="p-2"></div>
+
+<script>
+    $("#deleteClientForm").on("submit", function (e) {
+        e.preventDefault();
+        let form = $(this);
+
+        $.ajax({
+            url: form.attr("action"),
+            method: "POST",
+            data: form.serialize(),
+            success: function (resp) {
+                if (resp.success) {
+                    // Mensaje ok
+                    $("#delete-client-alert-container").html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ✅ ${resp.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+
+                    // Eliminar fila de la tabla
+                    $("#row-client-" + resp.id).remove();
+
+                    // Cerrar modal
+                    setTimeout(() => {
+                        $("#modal_datos").modal("hide");
+                    }, 500);
+
+                } else {
+                    $("#delete-client-alert-container").html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ${resp.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+                }
+            },
+            error: function () {
+                $("#delete-client-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ⚠️ Error de servidor al eliminar.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+            }
+        });
+    });
+</script>

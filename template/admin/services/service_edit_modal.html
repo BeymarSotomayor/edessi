@@ -1,0 +1,45 @@
+{% load crispy_forms_tags %}
+<form id="editServiceForm" method="post" action="{% url 'service_edit' service.id %}">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">✏️ Editar Servicio: {{ service.name }}</h5>
+        <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+    </div>
+
+    <div id="modal-alert-container" class="p-2"></div>
+
+    <div class="modal-body">
+        {{ form|crispy }}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
+
+<script>
+    $("#editServiceForm").on("submit", function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr("action"),
+            method: "POST",
+            data: $(this).serialize(),
+            success: function (resp) {
+                if (resp.success) {
+                    let row = $("#row-service-" + resp.data.id);
+                    row.find(".td-name").text(resp.data.name);
+                    row.find(".td-price").text(resp.data.price);
+
+                    setTimeout(() => { $("#modal_datos").modal("hide"); }, 500);
+                } else {
+                    $("#modal-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ❌ Corrige los errores: ${JSON.stringify(resp.errors)}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+                }
+            }
+        });
+    });
+</script>

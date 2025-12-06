@@ -1,0 +1,97 @@
+{% load crispy_forms_tags %}
+
+
+{% block contenido %}
+<div class="container">
+    <h2>👥 Lista de Clientes</h2>
+    <div id="alert-container"></div>
+
+    <!-- Botón Nuevo Cliente abre modal -->
+    <a class="btn btn-success mb-3" data-bs-toggle="modal" onclick="verModal('/clients/create')"
+        data-bs-target="#modal_datos">
+        <i class="bi bi-person-plus-fill"></i> Nuevo Cliente
+    </a>
+
+    <div class="table-fluid">
+
+        <table class="table table-hover display" id="example">
+            <thead>
+                <tr class="table-primary">
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr id="row-client-{{ client.id }}">
+                    <td class="td-id">{{ client.id }}</td>
+                    <td class="td-name">{{ client.name }}</td>
+                    <td class="td-last_name">{{ client.last_name }}</td>
+                    <td class="td-phone">{{ client.phone }}</td>
+                    <td class="d-flex">
+                        <!-- Editar (redirige a la vista de edición normal) -->
+                        <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/clients/{{ client.id }}/edit_modal/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <!-- Eliminar (confirmación en modal) -->
+                        <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/clients/{{ client.id }}/delete1/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-trash3-fill"></i> Eliminar
+                        </a>
+                        <a class="btn btn-outline-success btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/add_machine/{{ client.id }}')" data-bs-target="#modal_datos">
+                            <i class="bi bi-plus-lg"></i><i class="bi bi-pc-display"></i> Agregar Equipo
+                        </a>
+                        <a class="btn btn-outline-primary btn-sm me-1" onclick="verMachine('/clients/{{ client.id }}')">
+                            <i class="bi bi-arrow-right-square-fill"></i> Ver máquinas
+                        </a>
+                        <a class="btn btn-outline-success btn-sm me-1"
+                            href="https://api.whatsapp.com/send?phone={{client.phone}}&text=¡Hola!😃 te escribimos de %0D%0A*😎Empresa de Desarrollo de Software y Servicios Informáticos* (EDESSI)🩵💙. %0D%0A%0D%0A¿Me comunico con *{{client.name}} {{client.last_name}}*?"
+                            
+                            >
+                            <!-- target="_blank" = abrir nueva pestaña del navegador  rel="noopener noreferrer" = es una buena práctica de seguridad para evitar que la nueva ventana pueda manipular la tuya.-->
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a class="btn btn-outline-dark btn-sm me-1" href="#cl">
+                            <i class="bi bi-card-text"></i>
+                        </a>
+                    </td>
+                </tr>
+
+
+                {% empty %}
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function verModal(urls) {
+        $.ajax({
+            url: urls,
+            method: 'GET', // O 'POST', etc
+            success: function (respuesta) {
+                $('.datos_modal').html(respuesta);
+                inicializarTelefono();
+            },
+            error: function (xhr, status, error) {
+                console.error("Ocurrió un error:", error);
+            }
+        });
+    }
+    function verMachine(urls) {
+        window.location.href = urls;
+    }
+</script>
+
+{% endblock %}

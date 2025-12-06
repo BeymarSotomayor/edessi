@@ -1,0 +1,202 @@
+<!-- add_machine.html -->
+{% load crispy_forms_tags %}
+{% block title_modal %}
+<div class="modal-header bg-success">
+    <h5 class="modal-title"><i class="bi bi-plus-lg"></i><i class="bi bi-pc-display"></i> Nuevo Equipo</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+{% endblock title_modal %}
+<div class="container py-5">
+
+
+    <form id="machineForm" action="{% url 'add_machine' client.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-lg-12 col-md-12 mb-1">
+                {{ form.img_machine|as_crispy_field }}
+            </div>
+
+        </div>
+
+        <!-- Fila 2: Modelo | Estado -->
+        <div class="row">
+            <div class="col-lg-6 col-md-4 col-sm-4 mb-1">
+                {{ form.model|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 mb-1">
+                {{ form.brand|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 mb-1">
+                {{ form.status|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                {{ form.detail|as_crispy_field }}
+            </div>
+        </div>
+
+        <!-- Fila 3: Precio Aprox | Precio -->
+
+            
+        
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-1 row">
+                <div class="row">
+                    {{ form.accessories|as_crispy_field }}
+                    {{ form.other_accessories|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-1">
+                {{ form.problem|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-1 row">
+                <div class="row">
+                    <!-- {{ form.services|as_crispy_field }} -->
+                    <!-- {{ form.price_a_cuenta|as_crispy_field }} -->
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-1">
+                <!-- {{ form.diagnostic|as_crispy_field }} -->
+                <!-- {{ form.delivery_in|as_crispy_field }} -->
+            </div>
+        </div>
+        
+        <!-- <div class="row">
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_aprox|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_extra|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_descuento|as_crispy_field }}
+            </div>
+
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_fact|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price|as_crispy_field }}
+            </div>
+
+
+
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-1">
+                {{ form.price_a_cuenta|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-md-6 mb-1">
+                {{ form.saldo|as_crispy_field }}
+            </div>
+            
+                <ul class="list-group list-group-flush shadow-sm rounded bg-white">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b>Total:</b>
+                        <span>{{ machine.price|default:0.00|floatformat:2 }}</span>
+                    </li>
+
+                </ul>
+            
+
+        </div> -->
+
+        
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+
+        </div>
+    </form>
+
+</div>
+
+<div id="msg"></div>
+
+<!-- JQuery (si no lo tienes ya en base_admin.html) -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+<script>
+    $(document).ready(function () {
+        $("#machineForm").on("submit", function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr("action");
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $("#msg").html(`<div class="alert alert-success">${response.message}</div>`);
+                        form[0].reset();
+                        setTimeout(() => {
+                            document.activeElement.blur();
+                            $("#modal_datos").modal("hide");
+                        }, 500);
+                        window.location.href = "/clients/{{client.id}}/";
+                    } else {
+                        let errorHtml = "<ul>";
+                        $.each(response.errors, function (field, msgs) {
+                            errorHtml += `<li><strong>${field}</strong>: ${msgs.join(", ")}</li>`;
+                        });
+                        errorHtml += "</ul>";
+                        $("#msg").html(`<div class="alert alert-danger">${errorHtml}</div>`);
+                    }
+                },
+                error: function (xhr) {
+                    // 👇 Solo mostrar si contiene el mensaje de "No hay posiciones..."
+                    if (xhr.responseText.includes("No hay posiciones disponibles en el almacén.")) {
+                        $("#msg").html(`<div class="alert alert-danger">No hay posiciones disponibles en el almacén.</div>`);
+                    } else {
+                        $("#msg").html(`<div class="alert alert-danger">Error inesperado. Intente nuevamente.</div>`);
+                    }
+                }
+            });
+        });
+         // 🔹 Calcular el precio según los servicios seleccionados
+        const serviceCheckboxes = document.querySelectorAll('input[name="services"]');
+        const priceInput = document.getElementById("id_price");
+
+        function updatePrice() {
+            let total = 0;
+            serviceCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    total += parseFloat(cb.dataset.price || 0);
+                }
+            });
+            priceInput.value = total.toFixed(2);
+        }
+
+        serviceCheckboxes.forEach(cb => {
+            cb.addEventListener("change", updatePrice);
+        });
+
+        // Inicializar precio si hay seleccionados
+        updatePrice();
+    });
+    
+
+    
+    
+    
+    
+    // $.datepicker.setDefaults($.datepicker.regional["es"]);
+    // $('#id_delivery_in').datetimepicker({
+        
+    //     dateFormat: 'yy-mm-dd',
+    //     timeFormat: 'HH:mm',
+    //     minDate: 0
+    // });
+</script>

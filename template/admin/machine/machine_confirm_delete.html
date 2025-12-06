@@ -1,0 +1,12 @@
+{% extends "admin/base_admin.html" %}
+
+{% block contenido %}
+<h2>⚠️ Eliminar Máquina</h2>
+<p>¿Estás seguro que deseas eliminar la máquina <b>{{ object.description }}</b>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'machine_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

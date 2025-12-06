@@ -1,0 +1,105 @@
+<!-- admin/clients/client_create_modal.html -->
+{% load crispy_forms_tags %}
+<div class="modal-header">
+    <h5 class="modal-title">➕ Nuevo Cliente</h5>
+    <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+</div>
+
+<div class="modal-body">
+    <form id="clientForm" method="post" action="{% url 'client_create' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Contenedor para mensajes -->
+<div id="alert-container"></div>
+<!-- <script>
+    const phoneInput = document.querySelector("#id_phone");
+
+    const iti = window.intlTelInput(phoneInput, {
+        initialCountry: "bo",
+        preferredCountries: ["bo", "ar", "cl", "br", "py"],
+        separateDialCode: true,
+        autoPlaceholder: "aggressive",
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+    });
+
+    // Para enviar SIEMPRE el número completo (+591XXXXXX)
+    function getFullPhone() {
+        return iti.getNumber();
+    }
+</script> -->
+
+
+
+<script>
+
+    $("#clientForm").submit(function (e) {
+        e.preventDefault();
+        $("#id_phone").val(getFullPhone());
+        $.ajax({
+            type: $(this).attr("method"),
+            url: $(this).attr("action"),
+            data: $(this).serialize(),
+            success: function (response) {
+                if (response.success) {
+                    let newRow = `
+                    <tr id="row-client-${response.id}">
+                        <td class="td-id text-end">${response.id}</td>
+                        <td class="td-name">${response.name}</td>
+                        <td class="td-last_name">${response.last_name}</td>
+                        <td class="td-phone">${response.phone}</td>
+                        <td class="d-flex">
+                            <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                                onclick="verModal('/clients/${response.id}/edit_modal/')" data-bs-target="#modal_datos">
+                                <i class="bi bi-pencil-fill"></i> Editar
+                            </a>
+                            <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                                onclick="verModal('/clients/${response.id}/delete1/')" data-bs-target="#modal_datos">
+                                <i class="bi bi-trash3-fill"></i> Eliminar
+                            </a>
+                            <a class="btn btn-outline-success btn-sm me-1" data-bs-toggle="modal"
+                                onclick="verModal('/add_machine/${response.id}')" data-bs-target="#modal_datos">
+                                <i class="bi bi-plus-lg"></i><i class="bi bi-pc-display"></i> Agregar Equipo
+                            </a>
+                            <a class="btn btn-outline-primary btn-sm me-1" onclick="verMachine('/clients/${response.id}')">
+                                <i class="bi bi-arrow-right-square-fill"></i> Ver máquinas
+                            </a>
+                            
+                            <a class="btn btn-outline-success btn-sm me-1"
+                            href="https://api.whatsapp.com/send?phone=${response.phone}&text=Ya esta lista tu maquina, puedes venir a recogerlo. Gracias por requerir nuestros servicios *Empresa de Desarrollo de Software y Servicios Informáticos* EDESSI"
+                            
+                                >
+                                <!-- target="_blank" = abrir nueva pestaña del navegador  rel="noopener noreferrer" = es una buena práctica de seguridad para evitar que la nueva ventana pueda manipular la tuya.-->
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                            <a class="btn btn-outline-dark btn-sm me-1" href="#cl">
+                                <i class="bi bi-card-text"></i>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                    $("#example tbody").prepend(newRow);
+                    $("#modal_datos").modal("hide");
+                } else {
+                    let errorMessages = Object.values(response.errors).join("<br>");
+                    $("#alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errorMessages}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                `);
+
+                }
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,380 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} Iniciar Sesión - EDESSI {% endblock title %}</title>
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link id="bootstrap-theme" rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+
+    <style>
+        /* Switch personalizado */
+        #checkboxInput {
+            display: none;
+        }
+
+        .toggleSwitch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 55px;
+            height: 28px;
+            background-color: #6c757d;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .toggleSwitch::after {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #checkboxInput:checked+.toggleSwitch {
+            background-color: #946eff;
+        }
+
+        #checkboxInput:checked+.toggleSwitch::after {
+            transform: translateX(26px);
+        }
+
+        .navbar-translucent {
+            background-color: rgba(255, 255, 255, 0.266) !important;
+            /* 40% opaco */
+            backdrop-filter: blur(10px);
+            /* efecto vidrio */
+        }
+
+        .navbar-transparent {
+            background-color: transparent !important;
+            backdrop-filter: none;
+        }
+
+        .navbar {
+            border-bottom: none !important;
+            box-shadow: none !important;
+            /* por si el tema aplica sombra */
+        }
+
+        /* #typed-admin {
+            white-space: nowrap;
+        } */
+
+        /* CARROUSEL */
+        /* --- Panel Izquierdo --- */
+        .left-panel {
+            background: linear-gradient(to top right, #50a3cc, #498abd, #303089);
+            color: white;
+            padding: 2rem;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* --- Contenedor de imagen del slide --- */
+        .carousel-media-wrap {
+            flex: 0 0 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        #edessiSplide .carousel-media-wrap img {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16/9;
+            object-fit: contain;
+            display: block;
+            mask-image: linear-gradient(black 90%, transparent);
+            filter: drop-shadow(10px 8px 10px rgba(0, 0, 0, 0.25));
+        }
+
+        /* --- Texto del slide --- */
+        .carousel-caption-custom {
+            flex: 0 0 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            color: inherit;
+        }
+
+        .carousel-caption-custom p {
+            margin: 0;
+            line-height: 1.3;
+            max-height: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .carousel-media-wrap {
+                flex: 0 0 360px;
+            }
+
+            .carousel-caption-custom {
+                flex: 0 0 180px;
+            }
+        }
+
+    </style>
+</head>
+<header>
+    {% load static %}
+    <nav class="navbar navbar-expand-lg bg-light fixed-top navbar-translucent" data-bs-theme="light">
+        <div class="container-fluid">
+            <a class="navbar-brand me-auto" href="/"><img src="{% static 'img/logo-edessi.png' %}" alt=""
+                    class="navbar-brand me-auto" style="width: 150px; height: 60px;"></a>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><a class="navbar-brand me-auto"
+                            href="/"><img src="{% static 'img/logo-edessi.png' %}" alt=""
+                                class="navbar-brand me-auto" style="width: 150px; height: 60px;"></a></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+
+                    </ul>
+                    <ul class="navbar-nav justify-content-end">
+
+                        <li class="nav-item mx-2">
+                            <a class="nav-link" href="#" id="theme-toggle" title="Cambiar tema"
+                                data-light="{% static 'css/bootstrap.css' %}"
+                                data-dark="{% static 'css/bootstrap-dark.css' %}">
+                                <i id="theme-icon" class="bi bi-sun-fill fs-5"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+            <!-- <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button> -->
+        </div>
+    </nav>
+</header>
+
+<body class="bg-light">
+
+    <div class="container-fluid">
+        <div class="row min-vh-100">
+            <!-- Panel derecho con formulario -->
+            <div class="col-md-6 order-1 order-md-2 d-flex align-items-center justify-content-center min-vh-100">
+                <div class="w-100" style="max-width: 400px;">
+                    <!-- <h3 class="fw-bold mb-4 text-center">Iniciar sesión - Admin EDESSI</h3> -->
+                    <h3 class="text-center fw-bold mb-5"><strong id="typed-admin"></strong></h3>
+                    <form method="post" class="card p-4 shadow-lg border-0 pt-5 pb-5">
+                        {% csrf_token %}
+
+                        <!-- Usuario -->
+                        <div class="mb-3">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mb-3">
+                            {{ form.password.label_tag }}
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password.errors.0 }}
+                            </div>
+                            {% endif %}
+                            <!-- Switch mostrar/ocultar -->
+                            <div class="mt-2 d-flex justify-content-end align-items-center">
+                                <input type="checkbox" id="checkboxInput">
+                                <label for="checkboxInput" class="toggleSwitch"></label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary rounded-pill">Ingresar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Panel izquierdo -->
+            <!-- Panel izquierdo -->
+            <!-- Panel izquierdo -->
+            <div
+                class="col-md-6 order-2 order-md-1 bg-primary text-white d-flex flex-column justify-content-center p-5 left-panel">
+
+
+
+                <div id="edessiSplide" class="splide mt-4 pt-2 pb-5" aria-label="Carrusel EDESSI">
+                    <div class="splide__track">
+                        <ul class="splide__list">
+
+                            <!-- Slide 1 -->
+                            <li class="splide__slide">
+                                <div class="carousel-media-wrap rounded-top">
+                                    <img src="/static/img/edessi_circle.png" class="d-block w-100"
+                                        alt="Limpieza física">
+                                </div>
+                                <div class="carousel-caption-custom px-2">
+                                    <h5 class="fw-bold mb-2">¿Cómo se beneficia del sistema de EDESSI?</h5>
+                                    <p class="mb-0">Optimice el registro de clientes, controle sus equipos y gestione
+                                        cada servicio técnico desde una sola plataforma intuitiva.</p>
+                                </div>
+                            </li>
+
+                            <!-- Slide 2 -->
+                            <li class="splide__slide">
+                                <div class="carousel-media-wrap">
+                                    <img src="/static/img/login/panel.png" class="d-block w-100" alt="Servicio 2">
+                                </div>
+                                <div class="carousel-caption-custom px-2">
+                                    <h5 class="fw-bold mb-2">Panel de Control</h5>
+                                    <p class="mb-0">Visualice estadísticas y estados en tiempo real para tomar
+                                        decisiones rápidas y mejorar su productividad.</p>
+                                </div>
+                            </li>
+
+                            <!-- Slide 3 -->
+                            <li class="splide__slide">
+                                <div class="carousel-media-wrap">
+                                    <img src="/static/img/login/registro_clientes.png" class="d-block w-100"
+                                        alt="Servicio 3">
+                                </div>
+                                <div class="carousel-caption-custom px-2">
+                                    <h5 class="fw-bold mb-2">Registro de Clientes</h5>
+                                    <p class="mb-0">Agilice la creación de nuevos clientes y mantenga toda su
+                                        información organizada en un solo lugar.</p>
+                                </div>
+                            </li>
+
+                            <!-- Slide 4 -->
+                            <li class="splide__slide">
+                                <div class="carousel-media-wrap">
+                                    <img src="/static/img/login/registro_servicios.png" class="d-block w-100"
+                                        alt="Servicio 4">
+                                </div>
+                                <div class="carousel-caption-custom px-2">
+                                    <h5 class="fw-bold mb-2">Gestión de Servicios</h5>
+                                    <p class="mb-0">Administre fácilmente cada reparación, seguimiento y estado del
+                                        servicio desde un sistema centralizado.</p>
+                                </div>
+                            </li>
+
+                            <!-- Slide 5 -->
+                            <li class="splide__slide">
+                                <div class="carousel-media-wrap">
+                                    <img src="/static/img/login/reporte_maquinas.webp" class="d-block w-100"
+                                        alt="Servicio 5">
+                                </div>
+                                <div class="carousel-caption-custom px-2">
+                                    <h5 class="fw-bold mb-2">Reporte de Máquinas</h5>
+                                    <p class="mb-0">Registre cada equipo con precisión, controle su historial y mantenga
+                                        un seguimiento completo del proceso técnico.</p>
+                                </div>
+                            </li>
+
+                            <!-- Slide 6 -->
+                            <li class="splide__slide">
+                                <div class="carousel-media-wrap">
+                                    <img src="/static/img/login/ticket.webp" class="d-block w-100" alt="Servicio 6">
+                                </div>
+                                <div class="carousel-caption-custom px-2">
+                                    <h5 class="fw-bold mb-2">Generación de Tickets</h5>
+                                    <p class="mb-0">Genere tickets instantáneos para brindar transparencia y permitir
+                                        que sus clientes sigan el avance de su equipo.</p>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                    
+
+                    <!-- Indicadores (bolitas) -->
+                    <div class="splide__pagination mt-5"></div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- Script toggle password con el switch -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const checkbox = document.getElementById("checkboxInput");
+            const password = document.getElementById("id_password");
+
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    password.type = "text";
+                } else {
+                    password.type = "password";
+                }
+            });
+        });
+    </script>
+    <script src="{% static 'js/theme-toggle.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Typed('#typed-admin', {
+                strings: ['Iniciar sesión - Admin EDESSI '],
+                typeSpeed: 60,
+                backSpeed: 40,
+                backDelay: 1500,
+                loop: true,
+                showCursor: true,
+                cursorChar: '|'
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script>
+        new Splide('#edessiSplide', {
+            type: 'fade',
+            rewind: true,
+            autoplay: true,
+            interval: 7000,
+            pauseOnHover: true,
+            arrows: false,
+            pagination: true,
+        }).mount();
+    </script>
+
+
+</body>
+
+</html>

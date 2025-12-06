@@ -1,0 +1,246 @@
+{% extends 'portal/base_portal.html' %}
+{% load static %}
+
+{% block title %}
+Acerca de - EDESSI
+{% endblock title %}
+
+{% block contenido %}
+<!-- Custom Styles -->
+<style>
+    .bg-primary {
+        background-color: #007bff !important;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .img-container {
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: #fff;
+        border-radius: 15px 15px 0 0;
+    }
+    .img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: filter 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+</style>
+
+<!-- External Libraries -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+<!-- Animations & Effects -->
+<script>
+    // Animate background color
+    $(function() {
+        function animateBg() {
+            $(".bg-primary").animate({backgroundColor: "#0056b3"}, 1500)
+            .animate({backgroundColor: "#007bff"}, 1500, animateBg);
+        }
+        animateBg();
+    });
+
+    // Typed.js effect
+    document.addEventListener("DOMContentLoaded", function() {
+        new Typed('#typed-edessi', {
+            strings: ['EDESSI', 'Tecnología', 'Soluciones', 'Confianza'],
+            typeSpeed: 80,
+            backSpeed: 40,
+            backDelay: 1200,
+            startDelay: 400,
+            loop: true,
+            showCursor: true,
+            cursorChar: '|'
+        });
+    });
+
+    // Anime.js effect for hero image
+    document.addEventListener("DOMContentLoaded", function() {
+        anime({
+            targets: '#about-hero-img',
+            scale: [
+                { value: 1, duration: 1000 },
+                { value: 1.1, duration: 1000 },
+                { value: 1, duration: 1000 }
+            ],
+            // rotate: [
+            //     { value: 0, duration: 1000 },
+            //     { value: 5, duration: 1000 },
+            //     { value: 0, duration: 1000 }
+            // ],
+            easing: 'easeInOutSine',
+            loop: true
+        });
+    });
+
+    // Initialize AOS
+    document.addEventListener("DOMContentLoaded", function() {
+        AOS.init({
+            duration: 1200,
+            once: true
+        });
+    });
+</script>
+
+<!-- HERO SECTION -->
+<section class="bg-primary animated-bg py-5">
+    <div class="container">
+        <div class="row align-items-center text-justify py-5">
+            <div class="col-md-8 text-white" data-aos="fade-right">
+                <h1 class="fw-bold display-5">
+                    Acerca de <strong id="typed-edessi"></strong>
+                </h1>
+                <p class="fs-5 mt-4">
+                    En <strong>EDESSI</strong>, sabemos que más allá de adquirir un servicio, lo que realmente
+                    importa es elegir con confianza y propósito.
+                </p>
+                <p class="fs-5">
+                    Nos especializamos en ofrecer soluciones técnicas de alto nivel, brindando no solo productos, sino
+                    un acompañamiento completo en cada etapa de tu experiencia.
+                </p>
+                <p class="fs-5">
+                    Queremos que cada interacción sea sencilla, eficiente y significativa.
+                    Aquí no solo encuentras soluciones, encuentras <strong>profesionales dedicados</strong>,
+                    <strong>procesos optimizados</strong> y una <strong>atención personalizada</strong> que te asegura
+                    resultados.
+                </p>
+                <p class="fs-5 fw-bold">💡 Donde cada elección transforma tu experiencia.</p>
+            </div>
+            <div class="col-md-4" data-aos="zoom-in">
+                <img id="about-hero-img" src="{% static 'img/about-hero.svg' %}" alt="About Hero" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<!-- Add Shadow DOM library for glowing shadow effect -->
+<script src="https://cdn.jsdelivr.net/npm/shadowlord@1.0.2/dist/shadowlord.min.js"></script>
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5" data-aos="fade-up"><strong id="typed-servicios"></strong></h2>
+        <div class="row g-4">
+            <!-- Limpieza Física -->
+            <div class="col-md-4" data-aos="flip-left">
+                <div class="card shadow-lg h-100 text-center glowing-shadow">
+                    <img src="{% static 'img/servicios/limpieza_física.webp' %}" class="card-img-top p-4" alt="Limpieza Física">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><i class="bi bi-pc-display"></i> Limpieza Física</h5>
+                        <p class="card-text">Eliminamos el polvo y suciedad interna de tu PC o laptop para mejorar su
+                            rendimiento y alargar su vida útil.</p>
+                        <a href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera una *limpieza física* de mi máquina ¿Cuánto es el costo?"
+                            class="btn btn-success glow-border">Solicitar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Mantenimiento Software -->
+            <div class="col-md-4" data-aos="flip-left">
+                <div class="card shadow-lg h-100 text-center glowing-shadow">
+                    <img src="{% static 'img/servicios/mantenimiento_software.jpg' %}" class="card-img-top p-4"
+                        alt="Mantenimiento Software">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><i class="bi bi-wrench-adjustable"></i> Mantenimiento Software
+                        </h5>
+                        <p class="card-text">Optimizamos tu sistema operativo, eliminamos virus y configuramos software
+                            para un mejor rendimiento.</p>
+                        <a href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *mantenimiento de software* ¿Cuánto es el costo?"
+                            class="btn btn-success glow-border">Solicitar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio a Domicilio -->
+            <div class="col-md-4" data-aos="flip-left">
+                <div class="card shadow-lg h-100 text-center glowing-shadow">
+                    <img src="{% static 'img/servicios/a_domicilio.jpg' %}" class="card-img-top p-4" alt="Servicio a domicilio">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><i class="bi bi-house-gear"></i> Servicio a Domicilio</h5>
+                        <p class="card-text">Vamos hasta tu hogar o empresa para realizar diagnósticos y reparaciones
+                            sin que tengas que moverte.</p>
+                        <a href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *servicio a domicilio* ¿Cuánto es el costo?"
+                            class="btn btn-success glow-border">Solicitar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Asistencia Remota -->
+            <div class="col-md-4" data-aos="flip-left">
+                <div class="card shadow-lg h-100 text-center glowing-shadow">
+                    <img src="{% static 'img/servicios/asistencia_remota.jpg' %}" class="card-img-top p-4" alt="Asistencia Remota">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><i class="bi bi-headset"></i> Asistencia Remota</h5>
+                        <p class="card-text">Brindamos soporte en línea para resolver problemas de forma rápida y segura
+                            sin necesidad de desplazamientos.</p>
+                        <a href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera una *asistencia remota* ¿Cuánto es el costo?"
+                            class="btn btn-success glow-border">Solicitar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Mantenimiento de Impresoras -->
+            <div class="col-md-4" data-aos="flip-left">
+                <div class="card shadow-lg h-100 text-center glowing-shadow">
+                    <img src="{% static 'img/servicios/mantenimiento_impresoras.jpg' %}" class="card-img-top p-4"
+                        alt="Mantenimiento Impresoras">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><i class="bi bi-printer"></i> Mantenimiento de Impresoras</h5>
+                        <p class="card-text">Reparamos, configuramos y damos soporte a impresoras de diferentes marcas y
+                            modelos.</p>
+                        <a href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *mantenimiento de impresoras* ¿Cuánto es el costo?"
+                            class="btn btn-success glow-border">Solicitar</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Consultas -->
+            <div class="col-md-4" data-aos="flip-left">
+                <div class="card shadow-lg h-100 text-center glowing-shadow">
+                    <img src="{% static 'img/servicios/consultas.jpg' %}" class="card-img-top p-4" alt="Consultas">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><i class="bi bi-telephone-outbound"></i> Consultas</h5>
+                        <p class="card-text">Estamos disponibles para responder tus dudas, asesorarte y brindarte las
+                            mejores soluciones tecnológicas.</p>
+                        <a href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola, me comunico con *EDESSI*"
+                            class="btn btn-success glow-border">Solicitar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // Aplica una sombra animada y colorida a todas las cards de servicios usando Shadowlord.js
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.glowing-shadow').forEach(function(card) {
+            Shadowlord.apply(card, {
+                color: "#007bff",
+                blur: 32,
+                spread: 2,
+                glow: true,
+                animate: true,
+                speed: 1.5
+            });
+        });
+    });
+</script>
+{% endblock contenido %}

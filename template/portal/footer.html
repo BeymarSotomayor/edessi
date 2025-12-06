@@ -1,0 +1,118 @@
+{% load static %}
+<footer class="bg-ligh">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-3 pt-5 mx-auto">
+                <h2 class="h2 text-warning border-bottom pb-3 border-light logo"><img
+                        src="{% static 'img/logo-edessi.png' %}" alt="Logo EDESSI" style="width: 170px; height: 60px;">
+                </h2>
+                <ul class="list-unstyled text-dark footer-link-list">
+                    <li class="fs-5">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        {{ company.address }}
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone-outbound-fill"></i>
+                        <a class="text-decoration-none fs-5" href="tel:{{ company.phone_company }}">{{ company.phone_company }}</a>
+                    </li>
+                    <li>
+                        <i class="bi bi-envelope-fill"></i>
+                        <a class="text-decoration-none fs-5"
+                            href="mailto:{{ company.email }}">{{ company.email }}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 pt-5 mx-auto">
+                <h2 class="h2 text-dark border-bottom pb-3 border-light">Servicios</h2>
+                <ul class="list-unstyled text-light footer-link-list">
+                    <li><a class="text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera una *limpieza física* de mi máquina ¿Cuánto es el costo?"><i
+                                class="bi bi-pc-display"></i> Limpieza Física</a></li>
+                    <li><a class="text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *mantenimiento de sofware* ¿Cuánto es el costo?"><i
+                                class="bi bi-wrench-adjustable"></i> Mantenimiento Software</a></li>
+                    <li><a class="text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *servicio a domicilio* ¿Cuánto es el costo?"><i
+                                class="bi bi-house-gear"></i> A domicilio</a></li>
+                    <li><a class="text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera una *asistencia remota* ¿Cuánto es el costo?"><i
+                                class="bi bi-headset"></i> Asistencia Remota</a></li>
+                    <li><a class="text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *Mantenimiento para mi Impresora* ¿Cuánto es el costo?"><i
+                                class="bi bi-printer"></i> Mantenimiento de Impresoras</a></li>
+                    <li>
+                    <li><a class="text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola, me comunico con *EDESSI*"><i
+                                class="bi bi-telephone-outbound"></i> Consultas</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 pt-5 mx-auto">
+                <h2 class="h2 text-dark border-bottom pb-3 border-light">Productos</h2>
+                <ul class="list-unstyled text-light footer-link-list">
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'audifonos' %}"><i class="bi bi-headphones"></i> Audífonos</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'cargadores' %}"><i class="bi bi-lightning-charge"></i> Cargadores</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'fuentes' %}"><i class="bi bi-fuel-pump"></i> Fuentes de alimentación</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'memorias-ram' %}"><i class="bi bi-memory"></i> Memorias RAM</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'memorias-ssd' %}"><i class="bi bi-nvme"></i> Memorias SSD</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'memorias-hdd' %}"><i class="bi bi-hdd"></i> Memorias HDD</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'tarjetas-graficas' %}"><i class="bi bi-gpu-card"></i> Tarjetas Gráficas</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 pt-5">
+                <h2 class="h2 text-dark text-left border-bottom pb-3 border-light">Otros</h2>
+                <ul class="list-unstyled text-light footer-link-list">
+                    <li><a class="text-decoration-none fs-5" href="/"><i class="bi bi-house-fill"></i> Inicio</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'programas' %}"><i class="bi bi-cpu"></i> Programas</a></li>
+                    <li><a class="text-decoration-none fs-5" href="{% url 'category_detail' 'juegos' %}"><i class="bi bi-controller"></i> Juegos</a></li>
+                    <li><a class="text-decoration-none fs-5" href="/about"><i class="bi bi-person-lines-fill"></i> Acerca de</a></li>
+                    
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="row text-light text-center mb-4">
+            <div class="col-12 mb-3">
+                <div class="w-100 my-3 border-top border-light"></div>
+            </div>
+            <div class="col-auto me-auto">
+                <ul class="list-inline text-left footer-icons">
+                    <li class="list-inline-item text-center">
+                        <a class="text-dark text-decoration-none fs-5"
+                            href="https://www.facebook.com/PCEDESSICBBA"><i class="bi bi-facebook"></i> </a>
+                    </li>
+                    <li class="list-inline-item text-center">
+                        <a class="text-dark text-decoration-none fs-5"
+                            href="https://www.tiktok.com/@edessi7"><i class="bi bi-tiktok"></i></a>
+                    </li>
+                    <li class="list-inline-item text-center">
+                        <a class="text-dark text-decoration-none fs-5"
+                            href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola, ¿Me contacto con *EDESSI*?"><i
+                                class="bi bi-whatsapp"></i></a>
+                    </li>
+                    <li class="list-inline-item  text-center">
+                        <a class="text-dark text-decoration-none fs-5"
+                            href="https://www.youtube.com/@pcedessigame4232"><i class="bi bi-youtube"></i></a>
+                    </li>
+                </ul>
+            </div>
+            <!-- <div class="col-auto">
+                <label class="sr-only text-dark" for="subscribeEmail">Dirección de correo electrónico</label>
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control bg-ligh border-dark" id="subscribeEmail"
+                        placeholder="Dirección de correo electrónico">
+                    <button class="btn btn-success">Suscribete</button>
+                </div>
+            </div> -->
+        </div>
+    </div>
+
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+        © 2025 Copyright: Empresa de Desarrollo de Software Servicios Informáticos
+        <a class="text-reset fw-bold" href="#"> (EDESSI)</a>
+    </div>
+
+</footer>

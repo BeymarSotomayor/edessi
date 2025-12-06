@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@100;400;700&display=swap');
+
+
+.table-fluid {
+    display: flex;
+    flex-wrap: nowrap;
+    /* Evita que las tarjetas se rompan en nuevas filas */
+    overflow-x: auto;
+    /* Activa el desplazamiento horizontal */
+    gap: 1rem;
+    /* Espacio entre las tarjetas */
+}
+
+.table-fluid::-webkit-scrollbar {
+    height: 8px;
+    /* Tamaño del scrollbar */
+}
+
+.table-fluid::-webkit-scrollbar-thumb {
+    background: #888;
+    /* Color del scrollbar */
+    border-radius: 4px;
+    /* Bordes redondeados */
+}
+
+.table-fluid::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* Color del scrollbar al pasar el mouse */
+}
+

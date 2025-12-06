@@ -1,0 +1,66 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}
+Servicios - EDESSI
+{% endblock title %}
+{% load crispy_forms_tags %}
+
+    
+
+{% block contenido %}
+<div class="container">
+    <h2>🛠 Lista de Servicios</h2>
+    <div id="alert-container"></div>
+
+    <a class="btn btn-primary mb-3" data-bs-toggle="modal" onclick="verModal('/services/create/')"
+        data-bs-target="#modal_datos">
+        <i class="bi bi-plus-circle"></i> Nuevo Servicio
+    </a>
+
+    <div class="table-fluid">
+        <table class="table table-hover display" id="example">
+            <thead>
+                <tr class="table-primary">
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Precio (Bs.)</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr id="row-service-{{ service.id }}">
+                    <td>{{ service.id }}</td>
+                    <td class="td-name">{{ service.name }}</td>
+                    <td class="td-price">{{ service.price }}</td>
+                    <td class="d-flex">
+                        <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/services/{{ service.id }}/edit/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/services/{{ service.id }}/delete/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-trash3-fill"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function verModal(urls) {
+        $.ajax({
+            url: urls,
+            method: 'GET',
+            success: function (respuesta) {
+                $('.datos_modal').html(respuesta);
+            },
+            error: function (xhr, status, error) {
+                console.error("Ocurrió un error:", error);
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+<style>
+    .img-container {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        /* altura fija */
+    }
+
+    .img-background {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        /* o contain si quieres que no se recorte */
+    }
+
+    .img-name {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 80%;
+        /* evita que sobresalga */
+        max-height: 80%;
+        object-fit: contain;
+        z-index: 10;
+        /* aseguramos que esté encima */
+    }
+</style>
+
+<div class="modal-header">
+    <h5 class="modal-title">{{ product.name }}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+    <div class="img-container mb-3">
+        {% if product.img_background %}
+        <img src="{{ product.img_background.url }}" class="img-background" />
+        {% endif %}
+
+        {% if product.img_name %}
+        <img src="{{ product.img_name.url }}" class="img-name" />
+        {% endif %}
+    </div>
+
+    <div class="text-center mt-3 p-2">
+        <h6 class="fw-bold text-dark mb-2">{{ product.name }}</h6>
+        {% if product.price %}
+        <span class="badge bg-success fs-6">Bs/ {{ product.price }}</span>
+        {% else %}
+        <p class="text-muted mb-0">Precio no disponible</p>
+        
+        <a class="btn btn-outline-success btn-sm" href="https://api.whatsapp.com/send?phone={{company.phone_company}}&text=¡Hola!😃 ¿quisiera saber el costo de *{{product.name}}*?" ><i class="bi bi-whatsapp"></i> Preguntar</a>
+        {% endif %}
+
+        {% if product.detail %}
+        <p class="text-justify justify-content-center">{{ product.detail }}</p>
+        {% else %}
+        <p class="text-muted mb">Detalle no disponible</p>
+        {% endif %}
+        
+
+
+
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+</div>

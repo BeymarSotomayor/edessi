@@ -1,0 +1,158 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light">
+    <div class="container-fluid">
+        <a class="navbar-brand me-auto" href="/"><img src="{% static 'img/logo-edessi.png' %}" alt=""
+                class="navbar-brand me-auto" style="width: 150px; height: 60px;"></a>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel"><a class="navbar-brand me-auto" href="/"><img
+                            src="{% static 'img/logo-edessi.png' %}" alt="" class="navbar-brand me-auto"
+                            style="width: 150px; height: 60px;"></a></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/"><i class="bi bi-house-fill"></i>
+                            Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about"><i class="bi bi-person-lines-fill"></i> Acerca de</a>
+                    </li>
+                    <!-- Opciones visibles solo si el usuario está logueado -->
+                    <!-- <li class="nav-item">
+                        <a class="nav-link mx-lg-2" href="profile.php"><i class="bi bi-pencil-square"></i> Editar mi Información</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-lg-2" href="view-machine.php"><i class="bi bi-eye"></i> Ver mi Máquina</a>
+                    </li> -->
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Servicios
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item"
+                                    href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera una *limpieza física* de mi máquina ¿Cuánto es el costo?"><i
+                                        class="bi bi-pc-display"></i> Limpieza Física</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *mantenimiento de sofware* ¿Cuánto es el costo?"><i
+                                        class="bi bi-wrench-adjustable"></i> Mantenimiento Software</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *servicio a domicilio* ¿Cuánto es el costo?"><i
+                                        class="bi bi-house-gear"></i> A domicilio</a></li>
+                            <li><a class="dropdown-item"
+                                    href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera una *asistencia remota* ¿Cuánto es el costo?"><i
+                                        class="bi bi-headset"></i> Asistencia Remota</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item"
+                                    href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola EDESSI quisiera un *Mantenimiento para mi Impresora* ¿Cuánto es el costo?"><i
+                                        class="bi bi-printer"></i> Mantenimiento de Impresoras</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item"
+                                    href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola *EDESSI* quisiera..."><i
+                                        class="bi bi-telephone-outbound"></i> Consultas</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Instalaciones de...
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'programas' %}"><i class="bi bi-cpu"></i> Programas</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'juegos' %}"><i class="bi bi-controller"></i> Juegos</a></li>
+
+                            <li><a class="dropdown-item" href="#">..........</a></li>
+                            <li><a class="dropdown-item" href="#">..........</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">......</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Accesorios
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'audifonos' %}"><i class="bi bi-headphones"></i>
+                                    Audífonos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'cargadores' %}"><i class="bi bi-lightning-charge"></i>
+                                    Cargadores</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'fuentes' %}"><i class="bi bi-fuel-pump"></i> Fuentes de
+                                    alimentación</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'memorias-ram' %}"><i class="bi bi-memory"></i> Memorias RAM</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'memorias-ssd' %}"><i class="bi bi-nvme"></i> Memorias SSD</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'memorias-hdd' %}"><i class="bi bi-hdd"></i> Memorias HDD</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_detail' 'tarjetas-graficas' %}"><i class="bi bi-gpu-card"></i> Tarjetas
+                                    Gráficas</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin"><i class="bi bi-house-lock-fill"></i></a>
+                    </li>
+                    <li class="nav-item">
+
+                        <a class="nav-link mx-lg-2" href="https://www.facebook.com/PCEDESSICBBA"><img class="img-fluid"
+                                style="width: 20px;height:20px;" src="{% static 'img/social-media/facebook.png' %}"
+                                alt=""></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-lg-2" href="https://www.youtube.com/@pcedessigame4232"><img
+                                class="img-fluid" style="width: 20px;height:20px;"
+                                src="{% static 'img/social-media/youtube.png' %}" alt=""></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-lg-2" href="https://www.tiktok.com/@edessi7"><img class="img-fluid"
+                                style="width: 20px;height:20px;" src="{% static 'img/social-media/tiktok.png' %}"
+                                alt=""></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-lg-2" href="https://api.whatsapp.com/send?phone={{ company.phone_company }}&text=Hola me comunico con *EDESSI*"><img class="img-fluid"
+                                style="width: 20px;height:20px;" src="{% static 'img/social-media/whatsapp.png' %}"
+                                alt=""></a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav justify-content-end">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#" id="theme-toggle" title="Cambiar tema"
+                            data-light="{% static 'css/bootstrap.css' %}"
+                            data-dark="{% static 'css/bootstrap-dark.css' %}">
+                            <i id="theme-icon" class="bi bi-sun-fill"></i>
+                        </a>
+                    </li>
+                    <!-- Botón de cerrar sesión solo si el usuario está logueado -->
+
+                    <!-- <li class="nav-item">
+                            <button type="button" class="btn btn-outline-info logout">
+                                <a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-in-right"></i> cerrar sesión</a>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-info" href="/login"><i class="bi bi-box-arrow-in-left"></i> Iniciar sesión</a>
+                        </li> -->
+
+
+                </ul>
+
+            </div>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+            aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>

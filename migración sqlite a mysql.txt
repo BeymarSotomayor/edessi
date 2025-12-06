@@ -1,0 +1,20 @@
+1.- Instalación de gestor de paquetes
+    pip install mysqlclient o pip install pymysql
+2.- Edita settings.py
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'nombre_de_tu_bd',
+            'USER': 'root',  # O el usuario que configures
+            'PASSWORD': '',  # Por defecto vacío en entornos locales
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+        }
+    }
+
+3.- Con SQLite: python manage.py dumpdata > datos.json (exporta datos).
+
+4.- python manage.py makemigrations && python manage.py migrate (crea tablas)
+
+5.- python manage.py loaddata datos.json (importa datos).

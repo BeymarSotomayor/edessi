@@ -1,0 +1,44 @@
+<div class="modal-header">
+    <h5 class="modal-title">⚠️ Eliminar Servicio</h5>
+    <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+</div>
+
+<div class="modal-body">
+    <p>¿Estás seguro de eliminar el servicio <b>{{ service.name }}</b>?</p>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    <form id="deleteServiceForm" method="post" action="{% url 'service_delete' service.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    </form>
+</div>
+
+<div id="delete-service-alert-container" class="p-2"></div>
+
+<script>
+$("#deleteServiceForm").on("submit", function (e) {
+    e.preventDefault();
+    var form = $(this);
+
+    $.ajax({
+        url: form.attr("action"),
+        method: "POST",
+        data: form.serialize(),
+        success: function (resp) {
+            if (resp.success) {
+                $("#row-service-" + resp.id).remove();
+                setTimeout(() => { $("#modal_datos").modal("hide"); }, 500);
+            } else {
+                $("#delete-service-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${resp.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+            }
+        }
+    });
+});
+</script>

@@ -1,0 +1,39 @@
+.glow-border {
+    position: relative;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    animation: glowing 1s infinite;
+}
+
+/* .glow-border::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 5px;
+        animation: glowing 0.5s infinite;
+        z-index: -1;
+    } */
+
+@keyframes glowing {
+    0% {
+        box-shadow: 0 0 5px #28a746e2,
+            0 0 10px #28a746e2,
+            0 0 15px #28a746e2;
+    }
+
+    50% {
+        box-shadow: 0 0 20px #28a746e2,
+            0 0 35px #28a746e2,
+            0 0 50px #28a746e2;
+    }
+
+    100% {
+        box-shadow: 0 0 5px #28a746e2,
+            0 0 10px #28a746e2,
+            0 0 15px #28a746e2;
+    }
+}

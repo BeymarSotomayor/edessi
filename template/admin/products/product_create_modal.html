@@ -1,0 +1,67 @@
+{% load crispy_forms_tags %}
+<div class="modal-header">
+    <h5 class="modal-title">➕ Nuevo Producto</h5>
+    <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+</div>
+
+<div class="modal-body">
+    <form id="productForm" method="post" enctype="multipart/form-data" action="{% url 'product_create' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<div id="alert-container"></div>
+
+<script>
+    $("#productForm").submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            type: $(this).attr("method"),
+            url: $(this).attr("action"),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    let newRow = `
+                <tr id="row-product-${response.id}">
+                    <td class="text-end">${response.id}</td>
+                    <td class="td-name">${response.name}</td>
+                    <td class="td-price">${response.price}</td>
+                    <td class="td-category">${response.category}</td>
+                    <td class="d-flex">
+                        <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/products/${response.id}/edit/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/products/${response.id}/delete/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-trash3-fill"></i> Eliminar
+                        </a>
+                    </td>
+                </tr>`;
+                    $("#example tbody").prepend(newRow);
+                    $("#modal_datos").modal("hide");
+                } else {
+                    let errorMessages = Object.values(response.errors).join("<br>");
+                    $("#alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errorMessages}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                `);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    });
+</script>

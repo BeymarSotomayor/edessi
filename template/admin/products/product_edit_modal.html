@@ -1,0 +1,87 @@
+{% load crispy_forms_tags %}
+<form id="editProductForm" method="post" enctype="multipart/form-data" action="{% url 'product_edit' product.id %}">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">✏️ Editar Producto: {{ product.name }}</h5>
+        <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+    </div>
+
+    <div id="modal-alert-container" class="p-2"></div>
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                {{ form.img_background|as_crispy_field }}
+            </div>
+            <div class="col-lg-6 col-md-12">
+                {{ form.img_name|as_crispy_field }}
+            </div>
+        </div>
+
+        <!-- Fila 2: Nombre | Precio -->
+        <div class="row">
+            <div class="col-6 ">
+                {{ form.name|as_crispy_field }}
+            </div>
+            <div class="col-6 ">
+                {{ form.price|as_crispy_field }}
+            </div>
+        </div>
+
+        <!-- Fila 3: Detalle -->
+        <div class="">
+            {{ form.detail|as_crispy_field }}
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
+
+<script>
+    $("#editProductForm").on("submit", function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: $(this).attr("action"),
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (resp) {
+                if (resp.success) {
+                    $("#modal-alert-container").html(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ✅ ${resp.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+
+                    let row = $("#row-product-" + resp.data.id);
+                    row.find(".td-name").text(resp.data.name);
+                    row.find(".td-price").text("Bs/ " + resp.data.price);
+                    row.find(".td-category").text(resp.data.category);
+
+                    setTimeout(() => { $("#modal_datos").modal("hide"); }, 500);
+                } else {
+                    $("#modal-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ❌ Corrige los errores: ${JSON.stringify(resp.errors)}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+                }
+            },
+            error: function () {
+                $("#modal-alert-container").html(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ⚠️ Error al enviar formulario.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+            }
+        });
+    });
+</script>

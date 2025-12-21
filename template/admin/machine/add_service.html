@@ -1,0 +1,205 @@
+{% load crispy_forms_tags %}
+
+<form id="editMachineForm" method="post" action="{% url 'add_service' machine.id %}">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">✏️ Añadir Servicios {{ machine.brand }}({{ machine.model }}) </h5>
+        <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+    </div>
+
+    <!-- Contenedor de mensajes -->
+    <div id="modal-alert-container" class="p-2"></div>
+
+    <div class="modal-body">
+        <!-- <div class="row">
+            <div class="col-lg-12 col-md-12 mb-1">
+                {{ form.img_machine|as_crispy_field }}
+            </div>
+
+        </div> -->
+
+        <!-- Fila 2: Modelo | Estado -->
+        <!-- <div class="row">
+            <div class="col-lg-6 col-md-4 col-sm-4 mb-1">
+                {{ form.model|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 mb-1">
+                {{ form.brand|as_crispy_field }}
+            </div>
+            
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                {{ form.detail|as_crispy_field }}
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-1 row">
+                <div class="row">
+                    {{ form.accessories|as_crispy_field }}
+                    {{ form.other_accessories|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-1">
+                {{ form.problem|as_crispy_field }}
+            </div>
+        </div> -->
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-1 row">
+                <div class="row">
+                    {{ form.services|as_crispy_field }}
+
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-1">
+                {{ form.diagnostic|as_crispy_field }}
+                {{ form.delivery_in|as_crispy_field }}
+                <!-- <div class="col-lg-3 col-md-4 mb-1">
+                </div> -->
+            </div>
+        </div>
+        <!-- Fila 3: Precio Aprox | Precio -->
+        <div class="row">
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_aprox|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_extra|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_descuento|as_crispy_field }}
+            </div>
+
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_fact|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4 mb-1">
+                {{ form.status|as_crispy_field }}
+            </div>
+            <!-- <div class="col-lg-1 col-md-2 mb-1">
+                
+            </div> -->
+
+
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-1">
+                {{ form.price_a_cuenta|as_crispy_field }}
+            </div>
+            <div class="col-lg-3">
+
+            </div>
+            <div class="col-lg-6">
+                <ul class="list-group list-group-flush shadow-sm rounded bg-white">
+                    <!-- <li class="list-group-item d-flex justify-content-between">
+                        <b class="text-danger text-end">Devolución:</b>
+                        <span class="text-danger">{{ machine.devolucion|default:0.00|floatformat:2 }}</span>
+                    </li> -->
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b class="text-success">Saldo:</b>
+                        <span class="text-success">{{ machine.saldo|default:0.00|floatformat:2 }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b>Total:</b>
+                        <span>{{ machine.price|default:0.00|floatformat:2 }}</span>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- <div class="col-lg-3 col-md-6 mb-1">
+                {{ form.saldo|as_crispy_field }}
+            </div> -->
+
+
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
+
+<script>
+    $("#editMachineForm").on("submit", function (e) {
+        e.preventDefault();
+        let form = $(this);
+
+        $.ajax({
+            url: form.attr("action"),
+            method: "POST",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function (resp) {
+                if (resp.success) {
+                    // Mostrar mensaje en modal
+                    $("#modal-alert-container").html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ✅ ${resp.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+
+                    // 🔄 Actualizar fila en la tabla (coincidiendo con tus columnas)
+                    let row = $("#row-machine-" + resp.data.id);
+                    row.find(".td-ticket").text(resp.data.ticket);
+                    // row.find(".td-services").text(resp.data.services);
+                    row.find(".td-brand").text(resp.data.brand);
+                    row.find(".td-model").text(resp.data.model);
+                    row.find(".td-detail").text(resp.data.detail);
+                    row.find(".td-problem").text(resp.data.problem);
+                    row.find(".td-accessories").text(resp.data.accessories);
+                    row.find(".td-status").text(resp.data.status);
+                    row.find(".td-price-aprox").text(`${resp.data.price_aprox} Bs`);
+                    row.find(".td-price").text(`${resp.data.price} Bs`);
+                    row.find(".td-created").text(resp.data.created_at);
+                    row.find(".td-delivery").text(resp.data.delivery_in);
+                    row.find(".td-client").text(resp.data.client);
+                    row.find(".td-position").text(resp.data.position);
+
+                    // Si hay imagen nueva
+                    if (resp.data.img_machine_url) {
+                        row.find(".td-img").html(`<img src="${resp.data.img_machine_url}" style="max-width: 80px;">`);
+                    }
+
+                    // Cerrar modal en 0.5s
+                    setTimeout(() => {
+                        $("#modal_datos").modal("hide");
+                    }, 500);
+
+                } else {
+                    $("#modal-alert-container").html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ❌ Corrige los errores: ${JSON.stringify(resp.errors)}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+                }
+            },
+            error: function (xhr) {
+                $("#modal-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ⚠️ Error al enviar formulario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+            }
+        });
+    });
+</script>

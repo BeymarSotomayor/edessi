@@ -1,0 +1,240 @@
+{% extends "admin/base_admin.html" %}
+
+{% block contenido %}
+
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- AOS y Anime.js -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<div class="container py-4">
+
+    <div class="row g-3 mb-4">
+
+        <!-- Máquinas -->
+        <div class="col-md-3" data-aos="fade-right" data-aos-duration="1200">
+            <div class="card border-success custom-border shadow hover-scale">
+                <div class="card-body">
+                    <h5 class="text-center text-success fw-bold fs-1">Máquinas: </h5>
+                    <h5 class="text-center text-success fw-bold fs-1 animate-count" data-count="{{total_machines}}">
+                        0
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container" style="position: relative; height:354px; width:100%">
+                                <canvas id="machinesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Servicios -->
+        <div class="col-md-6" data-aos="fade-up" data-aos-duration="1200">
+            <div class="card border-info custom-border shadow hover-scale">
+                <div class="card-body">
+                    <h5 class="text-center text-info fw-bold fs-1">Servicios:</h5>
+                    <h5 class="text-center text-info fw-bold fs-1 animate-count" data-count="{{ total_services }}">Servicios:
+                        0
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-container" style="position: relative; height:354px; width:100%">
+                                <canvas id="servicesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Clientes, Categorías y Productos -->
+        <div class="col-md-3 d-flex flex-column gap-3">
+
+            <!-- Clientes -->
+            <div class="card shadow hover-scale" data-aos="fade-left" data-aos-delay="200">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3 text-primary">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Clientes</h5>
+                        <p class="fs-3 mb-0 animate-count" data-count="{{ total_clients }}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías -->
+            <div class="card shadow hover-scale" data-aos="fade-left" data-aos-delay="400">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3 text-success">
+                        <i class="bi bi-tags fs-1"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Categorías</h5>
+                        <p class="fs-3 mb-0 animate-count" data-count="{{ total_categories }}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos -->
+            <div class="card shadow hover-scale" data-aos="fade-left" data-aos-delay="600">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3 text-warning">
+                        <i class="bi bi-box-seam fs-1"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1">Productos</h5>
+                        <p class="fs-3 mb-0 animate-count" data-count="{{ total_products }}">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingresos de Hoy -->
+            <ul class="list-group shadow hover-scale" data-aos="fade-left" data-aos-delay="800">
+                <li class="list-group-item list-group-item-success d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 text-success">
+                            <i class="bi bi-cash-coin fs-1"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1">Ingresos de Hoy</h5>
+                            <p class="fs-3 mb-0 fw-bold text-success animate-count" data-count="{{ daily_income_total|floatformat:2 }}">0</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos -->
+<script>
+    const ctx = document.getElementById('machinesChart');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Recibido', 'En Revisión', 'Diagnóstico', 'Reparación',
+                'Pausado', 'Cancelado', 'En Proceso', 'Terminado',
+                'Por Entregar', 'Entregado'
+            ],
+            datasets: [{
+                data: [
+                    {{ machines_recibido }},
+                    {{ machines_en_revisión }},
+                    {{ machines_diagnóstico }},
+                    {{ machines_reparación }},
+                    {{ machines_pausado }},
+                    {{ machines_cancelado }},
+                    {{ machines_en_proceso }},
+                    {{ machines_terminado }},
+                    {{ machines_por_entregar }},
+                    {{ machines_entregado }}
+                ],
+                backgroundColor: [
+                    '#6c757d','#0dcaf0','#0d6efd','#6610f2','#fd7e14',
+                    '#dc3545','#a8e6a3','#69d18c','#28a745','#146c43'
+                ],
+                borderWidth: 1,
+                borderColor: '#fff',
+                hoverBorderColor: '#000'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 15, padding: 15 }
+                }
+            }
+        }
+    });
+
+    const servicesCtx = document.getElementById('servicesChart');
+    new Chart(servicesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ service_labels|safe }},
+            datasets: [{
+                data: {{ service_counts|safe }},
+                backgroundColor: [
+                    '#0d6efd','#6610f2','#6f42c1','#d63384','#dc3545',
+                    '#fd7e14','#ffc107','#198754','#20c997','#0dcaf0',
+                    '#17a2b8','#adb5bd','#343a40','#1989fa'
+                ],
+                borderWidth: 1,
+                borderColor: '#fff',
+                hoverBorderColor: '#000'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { boxWidth: 15, padding: 15 }
+                }
+            }
+        }
+    });
+</script>
+
+<!-- Inicializar AOS y Anime.js -->
+<script>
+    AOS.init();
+
+    // Contadores animados
+    document.querySelectorAll('.animate-count').forEach(el => {
+        let count = el.getAttribute('data-count');
+        anime({
+            targets: el,
+            innerHTML: [0, count],
+            easing: 'easeOutExpo',
+            round: 1,
+            duration: 2000
+        });
+    });
+
+    // Hover animado en tarjetas
+    document.querySelectorAll('.hover-scale').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            anime({
+                targets: card,
+                scale: 1.05,
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
+        });
+        card.addEventListener('mouseleave', () => {
+            anime({
+                targets: card,
+                scale: 1,
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
+        });
+    });
+</script>
+
+{% endblock %}

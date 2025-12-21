@@ -1,0 +1,299 @@
+{% load crispy_forms_tags %}
+
+<form id="editMachineForm" method="post" action="{% url 'machine_edit_modal' machine.id %}">
+    {% csrf_token %}
+    <div class="modal-header bg-success text-white">
+        <h5 class="modal-title"> <i class="bi bi-plus-lg"></i><i class="bi bi-building-gear"></i> Agregar servicio: {{machine.brand }}({{ machine.model }}) </h5>
+        <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+    </div>
+
+    <!-- Contenedor de mensajes -->
+
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 mb-1">
+                {{ form.img_machine|as_crispy_field }}
+            </div>
+
+        </div>
+
+        <!-- Fila 2: Modelo | Estado -->
+        <div class="row">
+            <div class="col-lg-6 col-md-4 col-sm-4 mb-1">
+                {{ form.model|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 mb-1">
+                {{ form.brand|as_crispy_field }}
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                {{ form.detail|as_crispy_field }}
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-1 row">
+                <div class="row">
+                    {{ form.accessories|as_crispy_field }}
+                    {{ form.other_accessories|as_crispy_field }}
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-1">
+                {{ form.problem|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-6 mb-1 row">
+                <div class="row">
+                    {{ form.services|as_crispy_field }}
+
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-1">
+                {{ form.diagnostic|as_crispy_field }}
+                {{ form.delivery_in|as_crispy_field }}
+                <!-- <div class="col-lg-3 col-md-4 mb-1">
+                </div> -->
+            </div>
+        </div>
+        <!-- Fila 3: Precio Aprox | Precio -->
+        <div class="row">
+
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_aprox|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_extra|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price_descuento|as_crispy_field }}
+            </div>
+
+            <div class="col-lg-1 col-md-4 mb-1">
+                {{ form.price_fact|as_crispy_field }}
+            </div>
+            <div class="col-lg-2 col-md-4 mb-1">
+                {{ form.price|as_crispy_field }}
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-4 mb-1">
+                {{ form.status|as_crispy_field }}
+            </div>
+
+            <!-- <div class="col-lg-1 col-md-2 mb-1">
+
+            </div> -->
+
+
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-1">
+                {{ form.price_a_cuenta|as_crispy_field }}
+            </div>
+            <div class="col-lg-3">
+
+            </div>
+            <div class="col-lg-6">
+                <ul class="list-group list-group-flush shadow-sm rounded bg-white">
+                    <!-- <li class="list-group-item d-flex justify-content-between">
+                        <b class="text-danger text-end">Devolución:</b>
+                        <span class="text-danger">{{ machine.devolucion|default:0.00|floatformat:2 }}</span>
+                    </li> -->
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b class="text-success">Saldo:</b>
+                        <span class="text-success" id="id_saldo">{{ machine.saldo|default:0.00|floatformat:2 }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <b>Total:</b>
+                        <span id="id_price_aprox_display">{{ machine.price|default:0.00|floatformat:2 }}</span>
+                    </li>
+
+                </ul>
+            </div>
+            <!-- <div class="col-lg-3 col-md-6 mb-1">
+                {{ form.saldo|as_crispy_field }}
+            </div> -->
+
+
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+
+
+            </div>
+        </div>
+    </div>
+    <div id="modal-alert-container" class="p-2"></div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <script>
+            function recalcularPrecio() {
+                let data = {
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                    price: $("#id_price").val(),
+                    price_aprox: $("#id_price_aprox").val(),
+                    price_extra: $("#id_price_extra").val(),
+                    price_descuento: $("#id_price_descuento").val(),
+                    price_fact: $("#id_price_fact").is(":checked"),
+                    price_a_cuenta: $("#id_price_a_cuenta").val()
+                };
+
+                // 🔹 Agregar los servicios seleccionados (ManyToMany)
+                let selectedServices = [];
+                $("input[name='services']:checked").each(function () {
+                    selectedServices.push($(this).val());
+                });
+                data["services[]"] = selectedServices;
+
+                $.ajax({
+                    url: "{% url 'calcular_precio_ajax' %}",
+                    type: "POST",
+                    data: data,
+                    traditional: true,  // 🔑 para enviar correctamente listas (services[])
+                    success: function (resp) {
+                        // Solo actualizar price_aprox con total de servicios
+                        if ($("#id_price_aprox").length) {
+                            $("#id_price_aprox").val(Number(resp.total_services).toFixed(2));
+                        }
+                        if ($("#id_price").length) {
+                            $("#id_price").val(Number(resp.price).toFixed(2));
+                        }
+
+                        // Mostrar TOTAL final en el display
+                        if ($("#id_price_aprox_display").length) {
+                            $("#id_price_aprox_display").text(Number(resp.price).toFixed(2));
+                        }
+
+                        // SALDO
+                        if ($("#id_saldo").length) {
+                            $("#id_saldo").text(Number(resp.saldo).toFixed(2));
+                        }
+
+                        // DEVOLUCION (opcional)
+                        if ($("#id_devolucion").length) {
+                            $("#id_devolucion").text(Number(resp.devolucion).toFixed(2));
+                        }
+
+                        // // Actualiza #id_price (input) como ya lo haces
+                        // if (resp.price !== undefined && $("#id_price").length) {
+                        //     $("#id_price").val(Number(resp.price).toFixed(2));
+                        // }
+                    }
+
+                });
+            }
+
+            // Detectar cambios en campos numéricos y checkbox de servicios
+            $(document).on(
+                "input change",
+                "#id_price_aprox, #id_price_extra, #id_price_descuento, #id_price_fact, #id_price_a_cuenta, input[name='services'],#id_saldo,#id_price",
+                function () {
+                    recalcularPrecio();
+                }
+            );
+        </script>
+
+
+    </div>
+</form>
+
+<script>
+    function renderStatus(status) {
+        const styles = {
+            "Recibido": 'border border-secondary bg-secondary',
+            "En Revisión": 'border border-success bg-primary',
+            "Diagnóstico": 'border border-info bg-info',
+            "Reparación": 'border border-warning bg-warning text-dark',
+            "Pausado": 'border border-dark bg-dark text-white',
+            "Cancelado": 'border border-danger bg-danger text-white',
+            "En proceso": 'border border-primary bg-primary text-white',
+            "Terminado": 'border border-dark bg-success text-white',
+            "Por Entregar": 'border bg-primary text-white',
+            "Entregado": 'border border-success bg-success text-white'
+        };
+
+        let classes = styles[status] || "border bg-light";
+
+        return `
+        <p class="${classes} rounded text-center fw-bold m-0">
+            ${status || "------"}
+        </p>
+    `;
+    }
+    $("#editMachineForm").on("submit", function (e) {
+        e.preventDefault();
+        let form = $(this);
+
+        $.ajax({
+            url: form.attr("action"),
+            method: "POST",
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
+            success: function (resp) {
+                if (resp.success) {
+                    // Mostrar mensaje en modal
+                    $("#modal-alert-container").html(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ✅ ${resp.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+
+                    // 🔄 Actualizar fila en la tabla (coincidiendo con tus columnas)
+                    let row = $("#row-machine-" + resp.data.id);
+                    row.find(".td-ticket").text(resp.data.ticket);
+                    // row.find(".td-services").text(resp.data.services);
+                    row.find(".td-brand").text(resp.data.brand);
+                    row.find(".td-model").text(resp.data.model);
+                    row.find(".td-detail").text(resp.data.detail);
+                    row.find(".td-problem").text(resp.data.problem);
+                    row.find(".td-accessories").text(resp.data.accessories);
+                    // row.find(".td-status").text(resp.data.status);
+                    row.find(".td-status").html(renderStatus(resp.data.status));
+                    row.find(".td-price-aprox").text(`${resp.data.price_aprox} Bs`);
+                    row.find(".td-price").text(`${resp.data.price} Bs`);
+                    row.find(".td-created").text(resp.data.created_at);
+                    row.find(".td-delivery").text(resp.data.delivery_in);
+                    row.find(".td-client").text(resp.data.client);
+                    row.find(".td-position").text(resp.data.position);
+
+                    // Si hay imagen nueva
+                    if (resp.data.img_machine_url) {
+                        row.find(".td-img").html(`<img src="${resp.data.img_machine_url}" style="max-width: 80px;">`);
+                    }
+
+                    // Cerrar modal en 0.5s
+                    setTimeout(() => {
+                        $("#modal_datos").modal("hide");
+                    }, 500);
+
+                } else {
+                    $("#modal-alert-container").html(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            ❌ Corrige los errores: ${JSON.stringify(resp.errors)} ${resp.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+                }
+            },
+            error: function (xhr) {
+                $("#modal-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ⚠️ Error al enviar formulario.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+            }
+
+        });
+    });
+</script>

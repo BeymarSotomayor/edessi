@@ -1,0 +1,26 @@
+<!-- admin/users/profile_edit.html -->
+{% extends 'admin/base_admin.html' %}
+{% load crispy_forms_tags %}
+
+{% block contenido %}
+
+<div class="container">
+    <h2>Editar Perfil</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                {{ u_form|crispy }}
+            </div>
+            <div class="col-md-6">
+                <label>Foto de perfil actual:</label><br>
+                <img src="{{ user.profile.image.url }}" width="150" class="rounded-circle mb-2">
+                {{ p_form|crispy }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+
+</div>
+{% endblock contenido %}
+    

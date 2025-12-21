@@ -1,0 +1,109 @@
+{% extends 'admin/base_admin.html' %}
+
+{% load crispy_forms_tags %}
+{% block contenido %}
+
+<!-- Importar AOS y Anime.js -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+
+<div class="container py-4" data-aos="fade-up" data-aos-duration="1200">
+    <div class="card shadow-lg" data-aos="zoom-in" data-aos-duration="1200">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" data-aos="fade-down">
+            <h5 class="mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-gear-fill fs-2"></i> 
+                <span class="animate-text">Editar Configuración</span>
+            </h5>
+            <a href="{% url 'admin' %}" class="btn btn-light btn-sm" data-aos="fade-left">Regresar</a>
+        </div>
+        <div class="card-body" data-aos="fade-up" data-aos-delay="300">
+
+            <p class="text-muted" data-aos="fade-right" data-aos-delay="400">
+                La información registrada aquí será reflejada en el ticket para entregar al cliente.
+            </p>
+            <!-- Información actual -->
+            <div class="row mb-4">
+                <div class="col-md-4" data-aos="fade-right">
+                    <div class="text-center" data-aos="zoom-in" data-aos-delay="500">
+                        {% if company.logo_img %}
+                        <img src="{{ company.logo_img.url }}" class="img-fluid mb-2 rounded shadow" alt="Logo">
+                        {% else %}
+                        {% load static %}
+                            <img src="{% static 'img/default.jpg' %}" class="img-fluid border rounded mb-2 shadow" alt="Logo Ingresa tu logo">
+                        {% endif %}
+                        <p class="fw-bold animate-text">{{ company.name_company }}</p>
+                    </div>
+                    <div data-aos="fade-up" data-aos-delay="600">
+                        <ul class="list-group mb-3 shadow-sm">
+                            <li class="list-group-item"><strong><i class="bi bi-telephone-inbound-fill text-success"></i> Teléfono:</strong> {{ company.phone_company }}</li>
+                            <li class="list-group-item"><strong><i class="bi bi-geo-alt-fill text-danger"></i> Dirección:</strong> {{ company.address }}</li>
+                            <li class="list-group-item"><strong><i class="bi bi-file-text-fill text-primary"></i> NIT:</strong> {{ company.nit }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-8" data-aos="fade-left" data-aos-delay="700">
+                    {% if company.address %}
+                        <div class="ratio ratio-16x9 shadow-lg rounded">
+                            <iframe
+                                src="https://www.google.com/maps?q={{ company.address|urlencode }}&output=embed"
+                                width="100%" height="300" style="border:0;" allowfullscreen=""
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" data-aos="fade-up" data-aos-delay="800">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg shadow animate-btn">Actualizar Configuración</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+        const input = document.querySelector("#id_phone_company");
+
+        const iti = window.intlTelInput(input, {
+            initialCountry: "bo",
+            preferredCountries: ["bo", "ar", "cl", "br", "py"],
+            separateDialCode: true,
+            autoPlaceholder: "aggressive",
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+        });
+
+    </script>
+<!-- Inicialización de AOS y Anime.js -->
+<script>
+    AOS.init();
+
+    // Animación de texto con Anime.js
+    anime.timeline({loop: false})
+        .add({
+            targets: '.animate-text',
+            opacity: [0,1],
+            translateY: [40,0],
+            easing: "easeOutExpo",
+            duration: 1200,
+            delay: anime.stagger(200)
+        });
+
+    // Animación de botón
+    anime({
+        targets: '.animate-btn',
+        scale: [0.8, 1],
+        opacity: [0, 1],
+        duration: 1000,
+        easing: 'easeOutElastic(1, .8)',
+        delay: 1200
+    });
+</script>
+
+{% endblock contenido %}

@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket</title>
+    <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/lumen/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @media print {
+            /* body {
+                margin: 0;
+                padding: 0;
+                background: none;
+            } */
+
+            /* .ticket-container {
+                box-shadow: none !important;
+                border: none !important;
+            } */
+
+            .btn {
+                display: none;
+            }
+            .cliente{
+                display: none;
+            }
+
+            /* canvas {
+                display: block !important;
+            } */
+        }
+        @page {
+            size: 4.125in 9.5in;
+            /* Carta */
+            margin: 0.2cm;
+            /* Ajusta márgenes según necesites */
+        }
+
+        .ticket-container {
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px dashed #ccc;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+
+        .ticket-header img {
+            max-width: 150px;
+            max-height: 80px;
+            margin-bottom: 5px;
+        }
+
+        .ticket-body .row {
+            margin-bottom: 8px;
+        }
+
+        .label-text {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .value-text {
+            text-align: left;
+        }
+
+        .ticket-footer {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            border-top: 2px dashed #ccc;
+            padding-top: 10px;
+        }
+
+        #qrcode {
+            display: block;
+            margin: 10px auto;
+            width: 170px;
+            height: 170px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <div class="ticket-container">
+        <div class="ticket-header">
+            {% if company.logo_img %}
+            <img src="{{ company.logo_img.url }}" alt="Logo">
+            {% endif %}
+            <h6 class="text-primary">{{ company.name_company }}</h6>
+            <small class="text-muted">{{ company.address }}</small>
+        </div>
+        <div class="ticket-body">
+            <!-- <div class="row">
+                <div class="col-5 label-text">ID:</div>
+                <div class="col-7 value-text" id="data-id">{{ machine.id }}</div>
+            </div> -->
+            <div class="row">
+                <div class="col-5 label-text">Servicio Nro:</div>
+                <div class="col-7 value-text" id="data-ticket">{{ machine.ticket }}</div>
+            </div>
+            {% if request.user.is_authenticated %}
+            <div class="row cliente">
+                <div class="col-5 label-text">Cliente:</div>
+                <div class="col-7 value-text" id="data-client">{{ machine.client }}</div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-5 label-text">Marca:</div>
+                <div class="col-7 value-text" id="data-brand">{{ machine.brand }}</div>
+            </div>
+            <div class="row">
+                <div class="col-5 label-text">Modelo:</div>
+                <div class="col-7 value-text" id="data-model">{{ machine.model }}</div>
+            </div>
+            <div class="row">
+                <div class="col-5 label-text">Estado:</div>
+                <div class="col-7 value-text" id="data-model">{{ machine.status }}</div>
+            </div>
+            <div class="row">
+                <div class="col-5 label-text">Accesorios:</div>
+                <div class="col-7 value-text" id="data-accessories">
+                    {% if machine.accessories %}
+                    {{machine.accessories}}
+                    {% else %}
+                    Sin accesorios
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                {% if machine.price_a_cuenta %}
+                <div class="col-5 label-text text-success">A Cuenta:</div>
+                <div class="col-7 value-text text-success" id="data-accessories">
+                    {{machine.price_a_cuenta}}
+                </div>
+                {% else %}
+                <div class="col-5 label-text text-danger">A Cuenta:</div>
+                <div class="col-7 value-text text-danger" id="data-accessories">
+                    NO DEJASTE A CUENTA
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="ticket-footer">
+            <p class="text-muted"> <i class="bi bi-telephone-inbound-fill text-success"></i>{{ company.phone_company }}</p>
+            <p class="text-muted"><i class="bi bi-file-text-fill text-primary"></i> NIT: {{ company.nit }}</p>
+            <p class="text-muted">Fecha: {{ machine.created_at|date:"d/m/Y" }}</p>
+            <!-- ✅ Aquí insertamos el QR generado en backend -->
+            <img id="qrcode" src="{% url 'qr_ticket_machine' machine.id %}" alt="Código QR de verificación">
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
+        <!-- <a class="btn btn-primary" href="#" onclick="window.history.go(-1)" >🖨️ Regresar</a> -->
+        
+        {% if request.user.is_authenticated %}
+            <a class="btn btn-primary btn-sm" href="{% url 'client_machine_list' client_id %}"><i
+                class="bi bi-arrow-up-left-circle"></i> Regresar</a>
+        {% else %}
+                <a class="btn btn-primary btn-sm" href="/"><i
+                class="bi bi-arrow-up-left-circle"></i> Regresar</a>
+        {% endif %}
+            
+
+    </div>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+    <script>
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        window.onload = async function () {
+            try {
+                const id = document.getElementById("data-id")?.innerText.trim() || "";
+                const ticket = document.getElementById("data-ticket")?.innerText.trim() || "";
+                const client = document.getElementById("data-client")?.innerText.trim() || "";
+                const brand = document.getElementById("data-brand")?.innerText.trim() || "";
+                const model = document.getElementById("data-model")?.innerText.trim() || "";
+                const accessories = document.getElementById("data-accessories")?.innerText.trim() || "";
+
+                const companyName = "{{ company.name_company|escapejs }}";
+                const companyAddress = "{{ company.address|escapejs }}";
+                const companyPhone = "{{ company.phone_company|escapejs }}";
+                const companyNIT = "{{ company.nit|escapejs }}";
+
+                const secretKey = "EDESSI_2025";
+
+                const qrData =
+                    `Empresa: ${companyName}
+                    NIT: ${companyNIT}
+                    Tel: ${companyPhone}
+                    Dir: ${companyAddress}
+                    -----------------------
+                    ID: ${id}
+                    Servicio Nro: ${ticket}
+                    Cliente: ${client}
+                    Marca: ${brand}
+                    Modelo: ${model}
+                    Accesorios: ${accessories}`;
+
+                const signature = await sha256(qrData + secretKey);
+
+                const qrText = `${qrData}\n\nFirma: ${signature}`;
+
+                const canvas = document.getElementById('qrcode');
+                if (canvas) {
+                    new QRious({
+                        element: canvas,
+                        value: qrText,
+                        size: 170
+                    });
+                }
+            } catch (err) {
+                console.error("❌ Error generando QR:", err);
+            }
+        };
+    </script> -->
+
+
+
+</body>
+
+</html>

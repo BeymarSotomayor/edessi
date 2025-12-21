@@ -1,0 +1,16 @@
+{% extends "admin/base_admin.html" %}
+{% load crispy_forms_tags %}
+
+{% block contenido %}
+<div class="container">
+
+    <h2>{% if form.instance.pk %}✏️ Editar Máquina{% else %}➕ Nueva Máquina{% endif %}</h2>
+    
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'machine_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

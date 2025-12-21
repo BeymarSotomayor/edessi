@@ -1,0 +1,157 @@
+{% extends "portal/base_portal.html" %}
+
+{% block title %}
+Juegos - EDESSI
+{% endblock title %}
+
+{% block contenido %}
+<div class="pt-5"></div>
+<div class="pt-5"></div>
+<!-- <h2>🎮 {{ category.name }}</h2> -->
+<div class="container mb-4">
+    <input type="text" id="search-input" class="form-control" placeholder="Buscar...">
+</div>
+
+
+{% load static %}
+<style>
+    .img-fixed {
+        width: 100%;
+        /* que se adapte al ancho del contenedor */
+        height: 300px;
+        /* alto fijo que quieras */
+        object-fit: cover;
+        /* recorta y centra la imagen */
+    }
+</style>
+<div class="container-fluid p-3">
+    <div class="row grid g-4 justify-content-center">
+        {% for product in category.products.all %}
+        <div class="col-6 col-sm-6 col-md-3 col-lg-3 col-xl-2 game-item" data-name="{{ product.name|lower }}"
+            data-price="{{ product.price }}">
+
+            <!-- Card -->
+
+            <div class="atropos card-atropos">
+                <div class="atropos-scale">
+                    <div class="atropos-rotate">
+                        <div class="atropos-inner position-relative">
+                            {% if product.img_background %}
+                            <img src="{{ product.img_background.url }}" data-atropos-offset="-5"
+                                class="img-fluid img-fixed" />
+                            {% else %}
+                            <img src="{% static 'img/default.jpg' %}" data-atropos-offset="-5"
+                                class="img-fluid img-fixed" />
+                            {% endif %}
+                            {% if product.img_name %}
+                            <img src="{{ product.img_name.url }}" data-atropos-offset="5"
+                                class="img-fluid position-absolute top-50 start-50 translate-middle" />
+                            {% endif %}
+
+                            {% if category.slug == "juegos" %}
+
+                            <img src="{% static 'img/juegos/ps5-top.svg' %}" data-atropos-offset="5"
+                                class="img-fluid position-absolute top-0 start-50 translate-middle-x" />
+                            <img src="{% static 'img/juegos/ps5-bottom.svg' %}" data-atropos-offset="10"
+                                class="img-fluid position-absolute bottom-0 start-50 translate-middle-x" />
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body text-center mt-3 p-2 shadow-lg rounded">
+                <div class="text-center">
+                    <h6 class="fw-bold text-dark mb-2">{{ product.name }}</h6>
+                </div>
+                {% if product.price %}
+                <span class="badge bg-success fs-6">Bs/ {{ product.price }}</span>
+                {% else %}
+                <div class="text-center">
+                    <p class="text-muted mb-0">Precio no disponible <a class="btn btn-outline-success btn-sm"
+                            href="https://api.whatsapp.com/send?phone={{company.phone_company}}&text=¡Hola!😃 ¿quisiera saber el costo de *{{product.name}}*?"><i
+                                class="bi bi-whatsapp"></i></a></p>
+
+
+                </div>
+                {% endif %}
+                <div class="text-center">
+
+                    <button class="btn btn-sm btn-primary mt-2" onclick="verModal('/product/{{ product.id }}/detail/')"
+                        data-bs-toggle="modal" data-bs-target="#modal_portal">
+                        <i class="bi bi-eye"></i> Ver
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+        <p class="text-center">No hay productos disponibles</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function verModal(urls) {
+        $.ajax({
+            url: urls,
+            method: 'GET',
+            success: function (respuesta) {
+                $('.modal_datos_portal').html(respuesta);
+            },
+            error: function (xhr, status, error) {
+                console.error("Ocurrió un error:", error);
+            }
+        });
+
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var gridElem = document.querySelector('.grid');
+
+        // Esperar a que todas las imágenes se carguen antes de Isotope
+        imagesLoaded(gridElem, function () {
+            var grid = new Isotope(gridElem, {
+                itemSelector: '.game-item',
+                layoutMode: 'fitRows',
+                getSortData: {
+                    name: '[data-name]'  // 👈 usamos el atributo data-name
+                },
+                sortBy: 'name',         // 👈 orden inicial alfabético
+                sortAscending: true     // 👈 true = A-Z, false = Z-A
+            });
+
+            // Filtrado en tiempo real por input
+            var searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('keyup', function () {
+                var filterValue = this.value.toLowerCase();
+                grid.arrange({
+                    filter: function (itemElem) {
+                        var name = itemElem.getAttribute('data-name');
+                        return name.includes(filterValue);
+                    },
+                    sortBy: 'name'  // 👈 aseguramos que siga ordenado
+                });
+            });
+        });
+
+        // Inicializar todos los atropos
+        document.querySelectorAll(".card-atropos").forEach(el => {
+            Atropos({
+                el: el,
+                activeOffset: 40,
+                shadow: true,
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+{% endblock contenido %}

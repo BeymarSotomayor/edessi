@@ -1,0 +1,9 @@
+<!-- machine_list.html -->
+{% extends "admin/base_admin.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Lista de Clientes - EDESSI{% endblock title %}
+
+{% block contenido %}
+    {% include "admin/clients/_client_.html" %}
+{% endblock %}

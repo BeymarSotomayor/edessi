@@ -1,0 +1,248 @@
+<!-- machine_client_list -->
+{% extends "admin/base_admin.html" %}
+{% load crispy_forms_tags %}
+
+{% block contenido %}
+<div class="container">
+
+    <h2 class="text-primary">🛠️ Equipos de: <strong>{{ client.name }} {{ client.last_name }}</strong></h2>
+
+    <div id="alert-container"></div>
+
+    <!-- Botón Agregar Máquina -->
+    <a class="btn btn-primary mb-3" data-bs-toggle="modal" onclick="verModal('/add_machine/{{ client.id }}')"
+        data-bs-target="#modal_datos">
+        <i class="bi bi-plus"></i><i class="bi bi-pc-display"></i> Nuevo Equipo
+    </a>
+    <a href="{% url 'client_list' %}" class="btn btn-outline-primary mb-3"><i class="bi bi-person-vcard"></i><i
+            class="bi bi-arrow-left"></i> Regresar a lista de clientes</a>
+
+
+    <div class="table-fluid">
+        <table class="table table-hover display" id="example">
+            <thead>
+                <tr class="table-primary">
+                    <th>#</th>
+                    <th>Ficha</th>
+                    <th>Posición</th>
+
+                    <th>Marca</th>
+                    <th>Modelo</th>
+
+
+                    <th>Accesorios</th>
+                    <th>Estado</th>
+
+                    <th>Precio</th>
+                    <th>Recepción</th>
+                    <th>Entrega</th>
+
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for machine in machines %}
+                <tr id="row-machine-{{ machine.id }}">
+                    <td>{{ machine.id }}</td>
+                    <td class="td-ticket text-center">{{ machine.ticket }}</td>
+                    <td class="td-position text-center">{{ machine.position|default:"----" }}</td>
+                    <td class="td-brand">{{ machine.brand|default:"--------" }}</td>
+                    <td class="td-model">{{ machine.model|default:"--------" }}</td>
+
+
+                    <td class="td-accessories">{{ machine.accessories|default:"-----------" }}</td>
+
+
+                    {% if machine.status == "Recibido" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-secondary bg-secondary rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "En Revisión" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-success bg-primary rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Diagnóstico" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-info bg-info rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Reparación" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-warning bg-warning text-dark rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Pausado" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-dark bg-dark text-white rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Cancelado" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-danger bg-danger text-white rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "En proceso" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-primary bg-primary text-white rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Terminado" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-dark bg-success text-white rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Por Entregar" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border bg-primary text-white rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% elif machine.status == "Entregado" %}
+                    <td class="td-status fw-bold text-center">
+                        <p class="border border-success bg-success text-white rounded">
+                            {{ machine.status|default:"------" }}
+                        </p>
+                    </td>
+                    {% endif %}
+
+
+
+                    <td class="td-price text-end">{{ machine.price|default:0.00 }} Bs</td>
+                    <td class="td-created">{{ machine.created_at|date:"d/m/Y H:i" }}</td>
+                    <td class="td-delivery">{{ machine.delivery_in|date:"d/m/Y H:i"|default:"---------------" }}</td>
+
+                    <td class="td-img">
+                        {% if machine.img_machine %}
+                        TIENE IMAGEN
+                        
+                        {% else %}
+                        No tiene imagen
+                        {% endif %}
+                    </td>
+
+                    <td class="d-flex">
+                        <!-- Editar -->
+                        <a class="btn btn-success btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/machines/{{ machine.id }}/edit/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-plus-circle"></i>
+                            <!-- Editar -->
+                        </a>
+                        <!-- Editar -->
+                        <!-- <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/machines/{{ machine.id }}/edit/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-pencil-square"></i>
+                        </a> -->
+
+                        <!-- Eliminar -->
+                        <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/machines/{{ machine.id }}/delete/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-trash3-fill"></i>
+                            <!-- Eliminar -->
+                        </a>
+                        {% if machine.status == "Terminado" %}
+                        <a class="btn btn-outline-success btn-sm me-1" href="https://api.whatsapp.com/send?phone={{client.phone}}&text=Ya esta listo tu Equipo *{{client.name}} {{client.last_name}}*😉 %0D%0AMarca: *{{machine.brand}}* 
+                            %0D%0AModelo: *{{machine.model}}* 
+                            %0D%0APrecio Total: *{{machine.price}} Bs*
+                            %0D%0Apuedes venir a recogerlo. 
+                            %0D%0A%0D%0A🥳Gracias por requerir nuestros servicios 
+                            %0D%0A%0D%0A*😎Empresa de Desarrollo de Software y Servicios Informáticos* (EDESSI)🩵💙"
+                            >
+                            <!-- target="_blank" = abrir nueva pestaña del navegador  rel="noopener noreferrer" = es una buena práctica de seguridad para evitar que la nueva ventana pueda manipular la tuya.-->
+                            <i class="bi bi-whatsapp"></i>
+                            <!-- <i class="bi bi-send-fill"></i> -->
+                        </a>
+                        {% elif machine.status == "Por Entregar"%}
+                        <a class="btn btn-outline-success btn-sm me-1" href="https://api.whatsapp.com/send?phone={{client.phone}}&text=Ya esta listo tu Equipo *{{client.name}} {{client.last_name}}*😉 %0D%0AMarca: *{{machine.brand}}* 
+                            %0D%0AModelo: *{{machine.model}}* 
+                            %0D%0APrecio Total: *{{machine.price}} Bs*
+                            %0D%0Apuedes venir a recogerlo. 
+                            %0D%0A%0D%0A🥳Gracias por requerir nuestros servicios 
+                            %0D%0A%0D%0A*😎Empresa de Desarrollo de Software y Servicios Informáticos* (EDESSI)🩵💙"
+                            >
+                            <!-- target="_blank" = abrir nueva pestaña del navegador  rel="noopener noreferrer" = es una buena práctica de seguridad para evitar que la nueva ventana pueda manipular la tuya.-->
+                            <i class="bi bi-whatsapp"></i>
+                            <!-- <i class="bi bi-send-fill"></i> -->
+                        </a>
+                        {% elif machine.status == "Entregado"%}
+                        <a class="btn btn-outline-success btn-sm me-1" href=""
+                            >
+                            <!-- target="_blank" = abrir nueva pestaña del navegador  rel="noopener noreferrer" = es una buena práctica de seguridad para evitar que la nueva ventana pueda manipular la tuya.-->
+                            <i class="bi bi-whatsapp"></i>
+                            <!-- <i class="bi bi-send-fill"></i> -->
+                        </a>
+
+                        {% else %}
+                        <a class="btn btn-outline-success btn-sm me-1" href="https://api.whatsapp.com/send?phone={{client.phone}}&text=🥳Gracias por requerir nuestros servicios *{{client.name}} {{client.last_name}}* pronto nos comunicaremos contigo en cuanto este tu equipo: *{{machine.brand}}* *{{machine.model}}* 😉 
+                            %0D%0A
+                            %0D%0A%0D%0A*😎Empresa de Desarrollo de Software y Servicios Informáticos* (EDESSI)🩵💙"
+                            >
+                            <!-- target="_blank" = abrir nueva pestaña del navegador  rel="noopener noreferrer" = es una buena práctica de seguridad para evitar que la nueva ventana pueda manipular la tuya.-->
+                            <i class="bi bi-whatsapp"></i>
+                            <!-- <i class="bi bi-send-fill"></i> -->
+                        </a>
+                            
+                        {% endif %}
+                            
+                        <a class="btn btn-outline-dark btn-sm me-1"
+                            href="{% url 'ticket_machine' machine.id %}">
+                            <!-- target="_blank" rel="noopener noreferrer" -->
+                            <i class="bi bi-printer-fill"></i>
+                            <!-- <i class="bi bi-card-text"></i> -->
+                        </a>
+                        <a class="btn btn-outline-primary btn-sm me-1"
+                            onclick="verMachine('machines/{{machine.id}}/detail/')" href="#cl">
+                            <i class="bi bi-arrow-right-square-fill"></i>
+                        </a>
+                        
+
+
+                    </td>
+                </tr>
+
+
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% load crispy_forms_tags %}
+<!-- Modal Dinámico para Crear/Editar -->
+<!-- Aquí se cargan los formularios con Ajax -->
+<!-- <div class="modal fade" id="modal_datos" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content datos_modal">
+
+        </div>
+    </div>
+</div> -->
+
+<script>
+    function verModal(urls) {
+        $.ajax({
+            url: urls,
+            method: 'GET',
+            success: function (respuesta) {
+                $('.datos_modal').html(respuesta);
+            },
+            error: function (xhr, status, error) {
+                console.error("Ocurrió un error:", error);
+            }
+        });
+    }
+    function verMachine(urls) {
+        window.location.href = urls;
+    }
+</script>
+{% endblock %}

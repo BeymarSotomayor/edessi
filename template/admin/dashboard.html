@@ -1,0 +1,346 @@
+{% extends "admin/base_admin.html" %}
+
+{% block contenido %}
+<style>
+    .custom-border {
+        border-width: 3px;
+    }
+</style>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- AOS y Anime.js -->
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<div class="container py-4">
+
+    <div class="row g-3 mb-4">
+
+        <!-- Máquinas -->
+        <div class="col-md-3">
+            <div class="card border-success custom-border shadow hover-scale">
+                <div class="card-body">
+                    <h5 class="text-center text-success fw-bold fs-1 ">Máquinas:</h5>
+                    <h5 class="text-center text-success fw-bold fs-1 animate-count" data-count="{{total_machines}}">0</h5>
+
+                    <div class="row">
+                        <!-- Gráfico -->
+                        <div class="col-md-12">
+                            <div class="chart-container" style="position: relative; height:354px; width:100%">
+                                <canvas id="machinesChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Tabla -->
+                        <!-- <div class="col-md-6">
+                            <table
+                                class="table table-sm table-bordered mt-3 bg-white text-dark text-center align-middle">
+                                <tbody>
+                                    <tr>
+                                        <td>Recibido</td>
+                                        <td><b>{{ machines_recibido }}</b></td>
+                                        <td>Pausado</td>
+                                        <td><b>{{ machines_pausado }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>En Revisión</td>
+                                        <td><b>{{ machines_en_revisión }}</b></td>
+                                        <td>Cancelado</td>
+                                        <td><b>{{ machines_cancelado }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Diagnóstico</td>
+                                        <td><b>{{ machines_diagnóstico }}</b></td>
+                                        <td>En Proceso</td>
+                                        <td><b>{{ machines_en_proceso }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reparación</td>
+                                        <td><b>{{ machines_reparación }}</b></td>
+                                        <td>Terminadas</td>
+                                        <td><b>{{ machines_terminadas }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Por Entregar</td>
+                                        <td><b>{{ machines_por_entregar }}</b></td>
+                                        <td>Entregado</td>
+                                        <td><b>{{ machines_entregado }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="fw-bold fs-1">{{total_machines}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Servicios -->
+        <div class="col-md-6" >
+            <div class="card border-info custom-border shadow hover-scale">
+                <div class="card-body">
+                    <h5 class="text-center text-info fw-bold fs-1" >Servicios:</h5>
+                    <h5 class="text-center text-info fw-bold fs-1 animate-count" data-count="{{ total_services }}">0</h5>
+
+                    <div class="row">
+                        <!-- Gráfico -->
+                        <div class="col-md-12">
+                            <div class="chart-container" style="position: relative; height:354px; width:100%">
+                                <canvas id="servicesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Clientes, Categorías y Productos en la misma columna -->
+        <div class="col-md-3 d-flex flex-column gap-3">
+
+            <!-- Clientes -->
+            <div class="card shadow">
+                <div class="card-body d-flex align-items-center">
+                    <!-- Icono -->
+                    <div class="me-3 text-primary">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                    <!-- Texto -->
+                    <div>
+                        <h5 class="mb-1">Clientes</h5>
+                        <p class="fs-3 mb-0">{{ total_clients }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías -->
+            <div class="card shadow">
+                <div class="card-body d-flex align-items-center">
+                    <!-- Icono -->
+                    <div class="me-3 text-success">
+                        <i class="bi bi-tags fs-1"></i>
+                    </div>
+                    <!-- Texto -->
+                    <div>
+                        <h5 class="mb-1">Categorías</h5>
+                        <p class="fs-3 mb-0">{{ total_categories }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos -->
+            <div class="card shadow">
+                <div class="card-body d-flex align-items-center">
+                    <!-- Icono -->
+                    <div class="me-3 text-warning">
+                        <i class="bi bi-box-seam fs-1"></i>
+                    </div>
+                    <!-- Texto -->
+                    <div>
+                        <h5 class="mb-1">Productos</h5>
+                        <p class="fs-3 mb-0">{{ total_products }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Ingresos de Hoy -->
+
+            <ul class="list-group shadow">
+                <li class="list-group-item list-group-item-success d-flex align-items-center justify-content-between">
+                    <!-- Icono + Texto -->
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 text-success">
+                            <i class="bi bi-cash-coin fs-1"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1 fw-bold"></h5>
+                        </div>
+                        <div class="fs-4 fw-bold">
+                            <h5 class="mb-1 fw-bold">Ingresos de Hoy</h5>
+                            <p class="fs-3 mb-0 fw-bold text-success animate-count" data-count="{{ daily_income_total|floatformat:2 }}">Bs. 0</p>
+
+                        </div>
+                    </div>
+                    <!-- Dato -->
+                </li>
+            </ul>
+
+
+        </div>
+
+
+
+
+    </div>
+</div>
+<!-- Ingresos Totales -->
+<div class="row mt-4">
+    <!-- ingreso diario -->
+
+
+
+    <!-- Ingreso Mensual -->
+    <!-- <div class="col-md-6">
+        <div class="card border-primary shadow">
+            <div class="card-body text-center">
+                <h5 class="fw-bold text-primary">Ingreso del Mes</h5>
+                <p class="fs-2 fw-bold text-dark">
+                    Bs. {{ monthly_income_total }}
+                </p>
+            </div>
+        </div>
+    </div> -->
+</div>
+
+
+
+
+<!-- Lista de Clientes -->
+
+
+{% include "admin/clients/_client_.html" %}
+
+
+<!-- AOS y anime.js -->
+<script>
+    AOS.init();
+
+    // Contadores animados
+    document.querySelectorAll('.animate-count').forEach(el => {
+        let count = el.getAttribute('data-count');
+        anime({
+            targets: el,
+            innerHTML: [0, count],
+            easing: 'easeOutExpo',
+            round: 1,
+            duration: 5000
+        });
+    });
+    document.querySelectorAll('.hover-scale').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            anime({
+                targets: card,
+                scale: 1.05,
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
+        });
+        card.addEventListener('mouseleave', () => {
+            anime({
+                targets: card,
+                scale: 1,
+                duration: 400,
+                easing: 'easeOutQuad'
+            });
+        });
+    });
+</script>
+
+<!-- Chart.js -->
+<script>
+    const ctx = document.getElementById('machinesChart');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Reparación','Cancelado','Por Entregar','Entregado',
+
+                // 'Recibido', 'En Revisión', 'Diagnóstico', 'Reparación',
+                // 'Pausado', 'Cancelado', 'En Proceso', 'Terminado',
+                // 'Por Entregar', 'Entregado'
+            ],
+            datasets: [{
+                data: [
+        //             {{ machines_recibido }},
+        //     {{ machines_en_revisión }},
+        //             {{ machines_diagnóstico }},
+        {{ machines_reparación }},
+        //{{ machines_pausado }},
+        {{ machines_cancelado }},
+        // {{ machines_en_proceso }},
+        // {{ machines_terminado }},
+        {{ machines_por_entregar }},
+        {{ machines_entregado }}
+                ],
+        backgroundColor: [
+        // '#6c757d',   // secondary (gris claro)   
+         '#0dcaf0',   // info (celeste)           
+         //'#fd7e14',   // orange (naranja)         
+         //'#6610f2',   // dark (gris oscuro)       
+         '#dc3545',   // danger (rojo)            
+         //'#a8e6a3',   // verde lechuga (claro)    
+         //'#69d18c',   // verde medio              
+         '#0d6efd',   // teal (verde agua)        
+        '#28a745',   // success (verde)          
+        //'#146c43'    // verde intenso            
+    ],
+        borderWidth: 1,
+        borderColor: '#fff',
+        hoverBorderColor: '#000'
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 15,
+                    padding: 15
+                }
+            }
+        }
+    }
+    });
+    //Servicios Chart.js
+    const servicesCtx = document.getElementById('servicesChart');
+    new Chart(servicesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ service_labels| safe }},
+        datasets: [{
+            data: {{ service_counts| safe }},
+        backgroundColor: [
+            '#0d6efd', // Azul
+            '#6610f2', // Morado
+            '#6f42c1', // Violeta
+            '#d63384', // Rosa
+            '#dc3545', // Rojo
+            '#fd7e14', // Naranja
+            '#ffc107', // Amarillo
+            '#198754', // Verde
+            '#20c997', // Verde-agua
+            '#0dcaf0', // Celeste
+            '#17a2b8', // Cyan
+            '#adb5bd', // Gris
+            '#343a40', // Gris oscuro
+            '#1989fa'  // Azul claro
+        ],
+        borderWidth: 1,
+        borderColor: '#fff',
+        hoverBorderColor: '#000'
+            }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 15,
+                    padding: 15
+                }
+            }
+        }
+    }
+    });
+</script>
+
+
+
+
+{% endblock %}

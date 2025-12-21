@@ -1,0 +1,45 @@
+<!-- admin/report/report_machine.html -->
+{% extends 'admin/base_admin.html' %}
+{% block title %}
+Reporte - EDESSI
+{% endblock title %}
+{% block contenido %}
+<h2>📊 Reporte de Máquinas</h2>
+{% load crispy_forms_tags %}
+<div class="container">
+    <form method="post" class="row g-3 mb-3">
+        {% csrf_token %}
+        <div class="col-auto">
+            {{ form.start_date.label_tag }}
+            {{ form.start_date }}
+        </div>
+        <div class="col-auto">
+            {{ form.end_date.label_tag }}
+            {{ form.end_date }}
+        </div>
+        <div class="col-auto pt-4">
+            <button class="btn btn-primary btn-sm" type="submit"><i class="bi bi-search"></i> Filtrar</button>
+            <a href="{% url 'report_machines_pdf' %}?start_date={{ form.start_date.value }}&end_date={{ form.end_date.value }}"
+                class="btn btn-success btn-sm" download><i class="bi bi-download"></i> Exportar PDF</a>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startInput = document.getElementById("id_start_date");
+        const endInput = document.getElementById("id_end_date");
+
+        startInput.addEventListener("change", function () {
+            endInput.min = startInput.value; // establece la fecha mínima
+            if (endInput.value < startInput.value) {
+                endInput.value = ""; // limpia si es menor
+            }
+        });
+    });
+
+</script>
+{% include 'admin/report/_report_.html' %}
+
+{% endblock contenido %}

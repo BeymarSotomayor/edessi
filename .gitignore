@@ -1,0 +1,11 @@
+consulta.sql
+"migración sqlite a mysql.txt"
+/edessi/__pycache__
+crear_repositorio.txt
+añadir_repositorio.txt
+/media
+/venv
+/app/administrador/__pycache__
+/app/administrador/migrations/__pycache__
+/app/portal/__pycache__
+/app/portal/migrations/__pycache__

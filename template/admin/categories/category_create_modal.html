@@ -1,0 +1,69 @@
+<!-- admin/categories/category_create_modal.html -->
+{% load crispy_forms_tags %}
+<div class="modal-header">
+    <h5 class="modal-title">➕ Nueva Categoría</h5>
+    <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+</div>
+
+<div class="modal-body">
+    <form id="categoryForm" method="post" action="{% url 'category_create' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+    </form>
+</div>
+
+<div id="alert-container"></div>
+
+<script>
+    $("#categoryForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: $(this).attr("method"),
+            url: $(this).attr("action"),
+            data: $(this).serialize(),
+            success: function (response) {
+                if (response.success) {
+                    let newRow = `
+                <tr id="row-category-${response.id}">
+                    <td class="text-end">${response.id}</td>
+                    <td class="td-name">${response.name}</td>
+                    <td class="d-flex">
+                        <a class="btn btn-warning btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/categories/${response.id}/edit/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-pencil-fill"></i> Editar
+                        </a>
+                        <a class="btn btn-danger btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/categories/${response.id}/delete/')" data-bs-target="#modal_datos">
+                            <i class="bi bi-trash3-fill"></i> Eliminar
+                        </a>
+                        <a class="btn btn-outline-success btn-sm me-1" data-bs-toggle="modal"
+                            onclick="verModal('/add_product/${response.id}')" data-bs-target="#modal_datos">
+                            <i class="bi bi-plus-lg"></i><i class="bi bi-boxes"></i> Agregar Producto
+                        </a>
+                        <a class="btn btn-outline-primary btn-sm me-1" onclick="verProduct('/categories/${response.id}')">
+                            <i class="bi bi-arrow-right-square-fill"></i> Ver Productos
+                        </a>
+                    </td>
+                </tr>`;
+                    $("#example tbody").prepend(newRow);
+                    $("#modal_datos").modal("hide");
+                } else {
+                    let errorMessages = Object.values(response.errors).join("<br>");
+                    $("#alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errorMessages}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                `);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error:", xhr.responseText);
+            }
+        });
+    });
+</script>

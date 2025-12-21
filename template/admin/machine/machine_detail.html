@@ -1,0 +1,179 @@
+{% extends 'admin/base_admin.html' %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block contenido %}
+
+<style>
+    .img-fixed {
+        width: 100%;
+        /* que se adapte al ancho del contenedor */
+
+        height: 300px;
+        /* alto fijo que quieras */
+        /* object-fit: contain; */
+        object-fit: contain;
+        /* object-fit: cover; */
+        /* recorta y centra la imagen */
+    }
+</style>
+
+<div class="container p-3">
+    <div class="row">
+        <!-- Título -->
+        <div class="col-12 text-center">
+            <h5>
+                Maquina - <strong>{{ machine.brand }}</strong> - <strong>{{ machine.client.name }}
+                    {{machine.client.last_name }}</strong>
+            </h5>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <!-- Imagen -->
+        <div class="col-md-4 text-center">
+            {% if machine.img_machine %}
+            <img src="{{ machine.img_machine.url }}" alt="Imagen de la maquina" class="img-fluid img-fixed">
+            {% else %}
+            <img src="{% static 'img/default.jpg' %}" class="img-fluid img-fixed" />
+            {% endif %}
+        </div>
+
+        <!-- Datos principales -->
+        <div class="col-md-4">
+            <ul class="list-group list-group-flush shadow-sm rounded bg-white">
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Servicio Nro:</b>
+                    <span>{{ machine.ticket }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Cliente:</b>
+                    <span>{{ machine.client }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Marca:</b>
+                    <span>{{ machine.brand|default:"-" }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Modelo:</b>
+                    <span>{{ machine.model|default:"-" }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Detalle:</b>
+                    <span>{{ machine.detail|default:"-" }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Estado:</b>
+                    <span>{{ machine.status }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Accesorios:</b>
+                    <span>{{ machine.accessories|default:"Sin accesorios" }}</span>
+                </li>
+            </ul>
+        </div>
+
+
+
+        <!-- Servicios -->
+        <div class="col-md-4">
+            <table class="table table-bordered text-start">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Precio (Bs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in machine.services.all %}
+                    <tr>
+                        <td>{{ service.name }}</td>
+                        <td class="text-end">{{ service.price }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">Sin servicios</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td><b>Subtotal:</b></td>
+                        <td class="text-end text-success fw-bold">{{ machine.price_aprox|default:0.00|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Saldo:</b></td>
+                        <td class="text-end text-success fw-bold">{{ machine.saldo|default:0.00|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Total:</b></td>
+                        <td class="text-end text-success fw-bold">{{ machine.price|default:0.00|floatformat:2 }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <!-- Problema -->
+        <div class="col-md-6">
+            <h6><b>Problema</b></h6>
+            <p>{{ machine.problem }}</p>
+        </div>
+
+        <!-- Diagnóstico -->
+        <div class="col-md-6">
+            <h6><b>Diagnóstico</b></h6>
+            <p>{{ machine.diagnostic }}</p>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <!-- Fechas -->
+        <div class="col-md-6">
+            <p><b>Fecha de recepción:</b> {{ machine.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><b>Fecha de entrega:</b> {{ machine.delivery_in|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+
+    <!-- <div class="row">
+        Total
+        <div class="col-12 text-center">
+            <h5><b>Total: </b>{{ machine.price_aprox|floatformat:2 }} Bs.-</h5>
+        </div>
+        <div class="col-lg-6 text-center mx-auto">
+            <ul class="list-group list-group-flush shadow-sm rounded bg-white">
+                <li class="list-group-item d-flex justify-content-between">
+                    <b class="text-danger text-end">Devolución:</b>
+                    <span class="text-danger">{{ machine.devolucion|default:0.00|floatformat:2 }}</span>
+                </li>
+                {% for s in machine.services.all %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-secondary">{{ s.name }}</span>
+                    <span class="text-secondary">{{ s.price|default:0.00 }}</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <b class="">Sin servicios</b>
+                    <span class="">0.00</span>
+                </li>
+                {% endfor %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <b class="text-success">Subtotal:</b>
+                    <span class="text-success">{{ machine.price_aprox|default:0.00|floatformat:2 }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b class="text-success">Saldo:</b>
+                    <span class="text-success">{{ machine.saldo|default:0.00|floatformat:2 }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <b>Total:</b>
+                    <span>{{ machine.price|default:0.00|floatformat:2 }}</span>
+                </li>
+
+            </ul>
+        </div>
+    </div> -->
+</div>
+{% endblock contenido %}

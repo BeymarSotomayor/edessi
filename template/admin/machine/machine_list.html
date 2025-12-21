@@ -1,0 +1,9 @@
+<!-- machine_list.html -->
+{% extends "admin/base_admin.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Máquinas - EDESSI{% endblock title %}
+
+{% block contenido %}
+    {% include "admin/machine/_machine_table.html" %}
+{% endblock %}

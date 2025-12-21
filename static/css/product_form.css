@@ -1,0 +1,69 @@
+/* GRID base - test inline (very specific so Bootstrap doesn't win) */
+#productForm {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    align-items: start;
+    width: 100%;
+}
+
+/* cada wrapper directo (.mb-3) será ítem de grid */
+#productForm>.mb-3 {
+    margin-bottom: 0;
+}
+
+/* Posicionar por id (usa los ids que mostraste) */
+#div_id_img_background {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+#div_id_img_name {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+#div_id_name {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#div_id_price {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#div_id_detail {
+    grid-column: 1 / -1;
+    grid-row: 3;
+}
+
+/* Estética: bordes redondeados y tamaño de detalle */
+#productForm input.form-control,
+#productForm textarea.form-control {
+    border-radius: 18px;
+}
+
+#div_id_detail textarea {
+    min-height: 220px;
+    border-radius: 14px;
+}
+
+/* Botones: forzamos fila aparte y alineación a la derecha */
+#productForm>button,
+#productForm .form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: 1rem;
+}
+
+/* Si los botones son hijos directos (sin wrapper) */
+#productForm>button.btn-secondary {
+    justify-self: end;
+}
+
+#productForm>button.btn-primary {
+    justify-self: start;
+}

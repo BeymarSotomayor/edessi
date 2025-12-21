@@ -1,0 +1,72 @@
+{% load crispy_forms_tags %}
+
+<form id="editClientForm" method="post" action="{% url 'client_edit_modal' client.id %}">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h5 class="modal-title">✏️ Editar Cliente: {{ client.name }}</h5>
+        <a type="a" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></a>
+    </div>
+    
+
+    <!-- Contenedor de mensajes -->
+    <div id="modal-alert-container" class="p-2"></div>
+
+    <div class="modal-body">
+        {{ form|crispy }}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
+
+<script>
+    $("#editClientForm").on("submit", function (e) {
+        e.preventDefault();
+        let form = $(this);
+        $("#id_phone").val(getFullPhone());
+        $.ajax({
+            url: form.attr("action"),
+            method: "POST",
+            data: form.serialize(),
+            success: function (resp) {
+                if (resp.success) {
+                    // Mostrar mensaje en modal
+                    $("#modal-alert-container").html(`
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ✅ ${resp.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+
+                    // 🔄 Actualizar fila en la tabla
+                    let row = $("#row-client-" + resp.data.id);
+                    row.find(".td-name").text(resp.data.name);
+                    row.find(".td-last_name").text(resp.data.last_name);
+                    row.find(".td-phone").text(resp.data.phone);
+
+                    // Cerrar modal en 1.5s
+                    setTimeout(() => {
+                        $("#modal_datos").modal("hide");
+                    }, 500);
+
+                } else {
+                    $("#modal-alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ❌ Corrige los errores: ${JSON.stringify(resp.errors)}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+                }
+            },
+            error: function (xhr) {
+                $("#modal-alert-container").html(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ⚠️ Error al enviar formulario Nombre y Apellidos ya existe.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+            }
+        });
+    });
+</script>
